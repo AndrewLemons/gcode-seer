@@ -20,7 +20,7 @@ It reports motion, extrusion, heater targets, printer constraints, and uncertain
 
 ## Tooling
 
-- Use Bun exclusively; `.bun-version` pins the development and CI version.
+- Use Bun for development, dependencies, builds, tests, and packaging; `.bun-version` pins its version. npm CLI is the release-only exception for staging and interactive approval/bootstrap.
 - Install with `bun install --frozen-lockfile`; commit `bun.lock` when dependencies change.
 - `bun run format` applies Oxfmt; use tabs, double quotes, and braces.
 - `bun run lint` runs Oxlint; `bun run typecheck` checks all TypeScript, including scripts.
@@ -38,5 +38,5 @@ It reports motion, extrusion, heater targets, printer constraints, and uncertain
 - `bun install` configures the local commit-message hook; `bun run prepare` reinstalls it.
 - PR titles and commits must use Conventional Commits; maintainers squash merge after CI passes.
 - Release Please owns package versions and `CHANGELOG.md`; do not edit them in feature PRs.
-- Releases publish with Bun and an npm environment token; see `docs/releasing.md` for setup and registry-policy limits.
+- Releases stage the Bun-built tarball with npm CLI and a stage-only environment token. Maintainers approve on npm with 2FA; CI never approves or directly publishes. See `docs/releasing.md`.
 - See `CONTRIBUTING.md` for contribution and release expectations.
