@@ -1,6 +1,6 @@
 {
 	"name": "gcode-seer",
-	"version": "0.1.0",
+	"version": "0.1.1",
 	"description": "Dependency-free TypeScript and JavaScript library for streaming 3D printer G-code analysis: motion, extrusion, temperatures and printer constraints.",
 	"keywords": [
 		"3d-printer",
