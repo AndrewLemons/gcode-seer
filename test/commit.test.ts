@@ -23,3 +23,21 @@ describe("conventional commit messages", () => {
 		expect(() => validateCommitMessage(message)).toThrow("Conventional Commit");
 	});
 });
+
+describe("pull request title CLI", () => {
+	it.each([
+		["feat(parser): support a new command", 0],
+		["chore(main): release 0.1.0", 0],
+		["Add a feature", 1],
+		["", 1],
+		["feat: valid subject\ninvalid title continuation", 1],
+		[`fix: ${"x".repeat(90)}`, 1],
+	])("validates the title from the environment: %s", (title, expectedExitCode) => {
+		const result = Bun.spawnSync([Bun.argv[0]!, "scripts/check-commit.ts", "--title"], {
+			env: { ...process.env, PR_TITLE: title, PR_NUMBER: "123" },
+			stdout: "pipe",
+			stderr: "pipe",
+		});
+		expect(result.exitCode).toBe(expectedExitCode);
+	});
+});

@@ -12,7 +12,18 @@ export function validateCommitMessage(message: string): void {
 
 if (import.meta.main) {
 	const [option, value] = Bun.argv.slice(2);
-	if (option === "--range" && value) {
+	if (option === "--title" && !value) {
+		const title = process.env.PR_TITLE ?? "";
+		if (/[\r\n]/.test(title)) {
+			throw new Error("Pull request titles must be a single Conventional Commit subject.");
+		}
+		validateCommitMessage(title);
+		const number = process.env.PR_NUMBER;
+		if (number) {
+			// GitHub appends the PR number to the title when squash merging.
+			validateCommitMessage(`${title} (#${number})`);
+		}
+	} else if (option === "--range" && value) {
 		const result = Bun.spawnSync(["git", "log", "--format=%s%x00", value], {
 			stderr: "inherit",
 		});
@@ -27,6 +38,8 @@ if (import.meta.main) {
 	} else if (option && !value) {
 		validateCommitMessage(await Bun.file(option).text());
 	} else {
-		throw new Error("Usage: bun run commit:check <message-file> | --range <git-range>");
+		throw new Error(
+			"Usage: bun run commit:check <message-file> | --range <git-range> | --title (reads PR_TITLE)",
+		);
 	}
 }
