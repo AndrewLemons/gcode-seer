@@ -50,7 +50,7 @@ Create a dedicated GitHub App, install it only on this repository, and disable i
 | Issues        | Read and write (release labels) |
 | Metadata      | Read (automatic)                |
 
-Set the repository Actions variable `RELEASE_APP_CLIENT_ID` to the App's **client ID**, and the repository Actions secret `RELEASE_APP_PRIVATE_KEY` to its generated PEM private key. The workflow creates a short-lived installation token and revokes it at job completion.
+Under Settings → Secrets and variables → Actions → Secrets, set the repository secret `RELEASE_APP_CLIENT_ID` to the App's **client ID**, and the repository secret `RELEASE_APP_PRIVATE_KEY` to its generated PEM private key. The workflow reads both values from `secrets`; putting the client ID under Variables leaves its input empty. The workflow creates a short-lived installation token and revokes it at job completion.
 
 Use the App rather than the default `GITHUB_TOKEN`: events generated with `GITHUB_TOKEN` do not trigger CI on release PRs or the publication workflow. No personal access token is required. See [Release Please's credentials guidance](https://github.com/googleapis/release-please-action#github-credentials) and [GitHub's App token action](https://github.com/actions/create-github-app-token).
 
