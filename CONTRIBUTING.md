@@ -23,7 +23,7 @@
 4. Push your branch and open a pull request against `main`. Use a Conventional Commit title describing the user-visible change. Complete the PR template, explain how you tested the change, and link any related issue.
 5. Address review feedback and keep the branch current by rebasing on `main`. Maintainers **squash merge** after both required checks pass. Check the final squash message: its title determines the release bump, and its body must preserve any breaking-change explanation.
 
-Do not change `package.json`'s version, `.release-please-manifest.json`, or `CHANGELOG.md` in feature PRs. Release Please maintains them automatically. After your PR merges, its commit contributes to the next release PR; merging that release PR publishes the package. See [the release guide](docs/releasing.md) for maintainer setup and recovery.
+Do not change `package.json`'s version, `.release-please-manifest.json`, or `CHANGELOG.md` in feature PRs. Release Please maintains them automatically. After your PR merges, its commit contributes to the next release PR; merging that release PR stages the package and opens a maintainer approval task. Publication requires review and 2FA on npm. See [the release guide](docs/releasing.md) for maintainer setup, first-publication bootstrap, and recovery.
 
 ## Design and tests
 
@@ -40,7 +40,7 @@ Run `bun run bench` when changing the hot path and record the workload and runti
 ## Tooling and style
 
 The development and CI version is pinned in `.bun-version` and `package.json`.
-Use Bun for dependency changes, scripts, tests, packaging, and publishing. Commit `bun.lock`; CI installs with `--frozen-lockfile`.
+Use Bun for dependency changes, scripts, tests, and packaging. npm CLI is used only for release staging and interactive approval/bootstrap because Bun does not support npm staging. Commit `bun.lock`; CI installs with `--frozen-lockfile`.
 Oxfmt owns formatting (tabs, double quotes, 100-column target), and Oxlint checks correctness and requires braces.
 Run `bun run format` to format changes and `bun run lint:fix` for automatic lint fixes.
 YAML and Markdown use spaces where their syntax requires them.

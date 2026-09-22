@@ -123,7 +123,7 @@ bun run pack:check
 
 Tests cover numerical behavior, full-path exclusion checks, modal transitions, streamed chunk boundaries, malformed input, configuration validation and extension behavior. CI uses the Bun version pinned in `.bun-version`.
 
-Contributions use Conventional Commits and squash-merged pull requests. Release Please generates version bumps and the changelog; merging a release PR automatically publishes the tested package to npm with Bun. See [contributing](CONTRIBUTING.md) and [release setup and recovery](docs/releasing.md).
+Contributions use Conventional Commits and squash-merged pull requests. Release Please generates version bumps and the changelog; merging a release PR stages the Bun-built package on npm and opens a maintainer approval task. A maintainer reviews and publishes it with npm 2FA. See [contributing](CONTRIBUTING.md) and [release setup and recovery](docs/releasing.md).
 
 Further reading: [API](docs/api.md), [supported commands and limits](docs/support.md), [architecture](docs/architecture.md), [research sources](docs/research.md), [contributing](CONTRIBUTING.md).
 
