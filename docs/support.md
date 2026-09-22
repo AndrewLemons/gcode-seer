@@ -40,7 +40,7 @@ Not every firmware implements every listed command. Dialects describe the analys
 
 The Prusa Buddy dialect also accepts `M191 C` (set chamber target and wait for cooling). S/R/C are mutually exclusive. Catalog XL T5 and INDX T8, and Bambu T255, are non-printing selections with unmodeled effects. They invalidate state without being mistaken for missing print tools.
 
-The parser supports compact words, signs, decimal fractions, lowercase commands, semicolon comments, single-level parenthesized comments, N line numbers, XOR checksums, BOMs, and LF/CRLF/CR line endings. It retains text payloads for display, file-selection and Bambu M1002 commands. Named macro payloads are available to adapters.
+The parser supports compact words, signs, decimal fractions, lowercase commands, semicolon comments, single-level parenthesized comments, N line numbers, XOR checksums, BOMs, and LF/CRLF/CR line endings. It retains text payloads for display, file-selection, Bambu M1002 and Prusa M862.3/.4/.6 commands. The Prusa checks remain semantically unsupported; preserving their quoted payloads avoids false syntax errors and makes them available to adapters. Named macro payloads are available to adapters.
 
 One command is expected per physical line. Modal command omission, multi-command CNC blocks, expressions, scientific notation and nested comments are outside the grammar. `G1 X1E3` means X=1 and E=3, not scientific notation. Numeric words have an absolute limit of 10¹². Binary G-code and 3MF containers require a separate decoder or extractor.
 

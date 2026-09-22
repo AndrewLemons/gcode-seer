@@ -7,6 +7,7 @@ import {
 	prusaLegacyDialect,
 	prusaBuddyDialect,
 	validatePrinterProfile,
+	parseLine,
 } from "../src/index.js";
 import type { PrinterProfile } from "../src/index.js";
 const initial = { initialPosition: { x: 0, y: 0, z: 1 }, initialExtrusion: 0 };
@@ -147,4 +148,16 @@ describe("Prusa firmware generations", () => {
 	it("does not silently accept compatibility switches", () => {
 		expect(analyze("M862.2 P250", { dialect: prusaBuddyDialect }).validity).toBe("unknown");
 	});
+	it.each(['M862.3 P"MK4S"', 'M862.4 P"6.4.0"', 'M862.6 P"Input shaper"'])(
+		"preserves string-valued checks for adapters without misclassifying syntax: %s",
+		(line) => {
+			const parsed = parseLine(`${line} ; slicer compatibility check`);
+			expect(parsed.diagnostics).toEqual([]);
+			expect(parsed.command?.payload).toBe(line.slice(line.indexOf(" ") + 1));
+			const report = analyze(line, { dialect: prusaBuddyDialect, ...initial });
+			expect(report.validity).toBe("unknown");
+			expect(report.complete).toBe(false);
+			expect(report.finalPosition).toEqual({ x: null, y: null, z: null });
+		},
+	);
 });
