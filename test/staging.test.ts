@@ -81,7 +81,7 @@ describe("npm staging", () => {
 		expect(commands).toHaveLength(1);
 	});
 
-	it("returns a bootstrap task for a missing package without any npm writes or credentials", async () => {
+	it("returns bootstrap status for a missing package without any npm writes or credentials", async () => {
 		const { services, commands } = fixture([], new Response(null, { status: 404 }));
 		expect((await stageRelease({ ...options, tokenAvailable: false }, services)).status).toBe(
 			"bootstrap",

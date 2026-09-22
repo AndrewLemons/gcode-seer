@@ -152,12 +152,6 @@ if (import.meta.main) {
 		},
 	);
 	console.log(JSON.stringify(result, null, 2));
-	if (process.env.GITHUB_OUTPUT) {
-		await appendFile(
-			process.env.GITHUB_OUTPUT,
-			`status=${result.status}\nversion=${version}\nintegrity=${result.integrity}\nstage-id=${result.stageId ?? ""}\n`,
-		);
-	}
 	if (process.env.GITHUB_STEP_SUMMARY) {
 		const status =
 			result.status === "staged"
@@ -167,7 +161,7 @@ if (import.meta.main) {
 					: "Already published; artifact verified";
 		await appendFile(
 			process.env.GITHUB_STEP_SUMMARY,
-			`## gcode-seer@${version}: ${status}\n\nStage ID: ${result.stageId ?? "not applicable"}\n\nTarball integrity: \`${result.integrity}\`\n\nSee [release instructions](https://github.com/AndrewLemons/gcode-seer/blob/main/docs/releasing.md). The notification job records the maintainer task.\n`,
+			`## gcode-seer@${version}: ${status}\n\nStage ID: ${result.stageId ?? "not applicable"}\n\nTarball integrity: \`${result.integrity}\`\n\nSee [release instructions](https://github.com/AndrewLemons/gcode-seer/blob/main/docs/releasing.md) for approval or first-publication steps.\n`,
 		);
 	}
 }
