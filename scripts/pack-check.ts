@@ -1,6 +1,11 @@
-import { mkdtemp, rm } from "node:fs/promises";
+import { copyFile, mkdir, mkdtemp, rm } from "node:fs/promises";
 import { tmpdir } from "node:os";
-import { join, resolve } from "node:path";
+import { dirname, join, resolve } from "node:path";
+
+const [option, output, ...extra] = Bun.argv.slice(2);
+if ((option && (option !== "--output" || !output)) || extra.length) {
+	throw new Error("Usage: bun run pack:check [--output <tarball-path>]");
+}
 
 const directory = await mkdtemp(join(tmpdir(), "gcode-seer-package-"));
 const tarball = join(directory, "gcode-seer.tgz");
@@ -94,6 +99,12 @@ console.log(report.complete, catalog.length, custom.name, parseLine("M9000 text"
 	console.log(
 		`Package smoke test passed: ${files.size} files, runtime import and TypeScript consumer.`,
 	);
+	if (output) {
+		const destination = resolve(output);
+		await mkdir(dirname(destination), { recursive: true });
+		await copyFile(tarball, destination);
+		console.log(`Verified tarball saved to ${destination}.`);
+	}
 } finally {
 	await rm(directory, { recursive: true, force: true });
 }

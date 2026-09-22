@@ -1,0 +1,82 @@
+name: Publish
+on:
+  release:
+    types: [published]
+  # Recovery: gh workflow run publish.yml --ref v0.1.0
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  # Serialize all versions so two releases cannot race to update npm's latest tag.
+  group: npm-publish
+  cancel-in-progress: false
+jobs:
+  build:
+    name: Verify release package
+    if: github.repository == 'AndrewLemons/gcode-seer' && startsWith(github.ref, 'refs/tags/v')
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    outputs:
+      artifact-id: ${{ steps.artifact.outputs.artifact-id }}
+      bun-version: ${{ steps.bun.outputs.bun-version }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2.2.0
+        id: bun
+        with:
+          bun-version-file: .bun-version
+          no-cache: true
+      - name: Verify release tag, metadata, and main branch ancestry
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_METADATA: ${{ runner.temp }}/release.json
+        run: |
+          git merge-base --is-ancestor HEAD origin/main
+          test "$(git rev-parse "refs/tags/$GITHUB_REF_NAME^{commit}")" = "$(git rev-parse HEAD)"
+          gh release view "$GITHUB_REF_NAME" --repo "$GITHUB_REPOSITORY" --json tagName,isDraft,isPrerelease > "$RELEASE_METADATA"
+          bun scripts/check-release.ts
+      - run: bun install --frozen-lockfile
+      - run: bun run check
+      - run: bun run commit:check --range HEAD
+      - name: Build and test the tarball that will be published
+        run: bun run pack:check --output "$RUNNER_TEMP/release/gcode-seer.tgz"
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        id: artifact
+        with:
+          name: npm-package
+          path: ${{ runner.temp }}/release/gcode-seer.tgz
+          if-no-files-found: error
+          retention-days: 30
+
+  publish:
+    name: Publish to npm
+    needs: build
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    environment:
+      name: npm
+      url: https://www.npmjs.com/package/gcode-seer
+    steps:
+      # This job never checks out source or installs project dependencies.
+      - uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2.2.0
+        with:
+          bun-version: ${{ needs.build.outputs.bun-version }}
+          no-cache: true
+      - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        with:
+          artifact-ids: ${{ needs.build.outputs.artifact-id }}
+          path: release
+          merge-multiple: true
+      - name: Publish the verified tarball
+        env:
+          NPM_CONFIG_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: |
+          if [[ -z "$NPM_CONFIG_TOKEN" ]]; then
+            echo "::error::Set NPM_TOKEN in the npm environment; see docs/releasing.md."
+            exit 1
+          fi
+          bun publish ./release/gcode-seer.tgz --access public --tag latest --registry https://registry.npmjs.org/ --tolerate-republish

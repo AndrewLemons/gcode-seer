@@ -9,7 +9,15 @@
 		"gcode",
 		"typescript"
 	],
+	"homepage": "https://github.com/AndrewLemons/gcode-seer#readme",
+	"bugs": {
+		"url": "https://github.com/AndrewLemons/gcode-seer/issues"
+	},
 	"license": "MIT",
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/AndrewLemons/gcode-seer.git"
+	},
 	"files": [
 		"dist",
 		"src",
@@ -28,6 +36,10 @@
 			"import": "./dist/index.js",
 			"default": "./dist/index.js"
 		}
+	},
+	"publishConfig": {
+		"access": "public",
+		"registry": "https://registry.npmjs.org/"
 	},
 	"scripts": {
 		"build": "bun run scripts/build.ts",
