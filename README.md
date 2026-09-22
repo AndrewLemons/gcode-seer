@@ -15,28 +15,28 @@ Full Bambu Studio files often contain proprietary startup operations, conditiona
 Once published:
 
 ```sh
-npm install gcode-seer
+bun add gcode-seer
 ```
 
-The package exports ESM and TypeScript declarations. Node.js 22.18 or later is the development baseline. The core also works in modern browsers with `TextDecoder`, `structuredClone` and async iteration.
+The package exports ESM and TypeScript declarations. Bun 1.4.2 or later is the development baseline. The core also works in modern browsers with `TextDecoder`, `structuredClone` and async iteration.
 
 ```ts
-import { analyze, type PrinterProfile } from 'gcode-seer';
+import { analyze, type PrinterProfile } from "gcode-seer";
 
 const printer: PrinterProfile = {
-  name: 'Example Cartesian printer',
-  homePosition: { x: 0, y: 0, z: 0 },
-  travelBounds: {
-    min: { x: 0, y: 0, z: 0 },
-    max: { x: 250, y: 250, z: 250 },
-  },
-  maxSpeed: { x: 300, y: 300, z: 15, e: 40 },
-  maxBedTemperature: 110,
-  tools: [{ id: 0, heater: 'hotend', maxTemperature: 280 }],
+	name: "Example Cartesian printer",
+	homePosition: { x: 0, y: 0, z: 0 },
+	travelBounds: {
+		min: { x: 0, y: 0, z: 0 },
+		max: { x: 250, y: 250, z: 250 },
+	},
+	maxSpeed: { x: 300, y: 300, z: 15, e: 40 },
+	maxBedTemperature: 110,
+	tools: [{ id: 0, heater: "hotend", maxTemperature: 280 }],
 };
 
-const report = analyze('G28\nG92 E0\nM104 S210\nG1 X50 Y50 Z0.2 E2 F1800', {
-  printer,
+const report = analyze("G28\nG92 E0\nM104 S210\nG1 X50 Y50 Z0.2 E2 F1800", {
+	printer,
 });
 
 console.log(report.validity); // 'valid'
@@ -64,12 +64,11 @@ Unknown portions are omitted from metrics. Missing values are represented by `nu
 ## Stream a file
 
 ```ts
-import { createReadStream } from 'node:fs';
-import { analyzeStream } from 'gcode-seer';
+import { analyzeStream } from "gcode-seer";
 
-const report = await analyzeStream(createReadStream('part.gcode'), {
-  printer,
-  maxDiagnostics: 500,
+const report = await analyzeStream(Bun.file("part.gcode").stream(), {
+	printer,
+	maxDiagnostics: 500,
 });
 ```
 
@@ -80,16 +79,16 @@ Memory use is bounded by the current line, retained diagnostics, configuration a
 Printable geometry and machine travel are separate constraints. Purging, wiping and parking may use coordinates outside the printable bed.
 
 ```ts
-import { bambuExclusion, createBambuX1CarbonPrintProfile } from 'gcode-seer';
+import { bambuExclusion, createBambuX1CarbonPrintProfile } from "gcode-seer";
 
 const x1 = createBambuX1CarbonPrintProfile();
 // Slicer print limits: 256 × 256 × 250 mm and the front-left exclusion.
 
-const clamp = bambuExclusion(['40x40', '50x40', '50x60', '40x60'], {
-  id: 'bed-clamp',
-  appliesTo: 'all',
-  minZ: 0,
-  maxZ: 12,
+const clamp = bambuExclusion(["40x40", "50x40", "50x60", "40x60"], {
+	id: "bed-clamp",
+	appliesTo: "all",
+	minZ: 0,
+	maxZ: 12,
 });
 ```
 
@@ -100,15 +99,15 @@ Profiles can define multiple material tools sharing a physical heater, independe
 ## Development
 
 ```sh
-npm ci
-npm run check
-npm run test:coverage
-npm run format:check
-npm run bench
-npm run pack:check
+bun install --frozen-lockfile
+bun run check
+bun run test:coverage
+bun run format:check
+bun run bench
+bun run pack:check
 ```
 
-Tests cover numerical behavior, full-path exclusion checks, modal transitions, streamed chunk boundaries, malformed input, configuration validation and extension behavior. CI runs on Node.js 22 and 24.
+Tests cover numerical behavior, full-path exclusion checks, modal transitions, streamed chunk boundaries, malformed input, configuration validation and extension behavior. CI uses the Bun version pinned in `.bun-version`.
 
 Further reading: [API](docs/api.md), [supported commands and limits](docs/support.md), [architecture](docs/architecture.md), [research sources](docs/research.md), [contributing](CONTRIBUTING.md).
 

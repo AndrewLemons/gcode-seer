@@ -28,7 +28,7 @@ The main pass is linear in input size for ordinary moves. Polygon checks add wor
 
 The analyzer retains no command list or toolpath. Memory is bounded by input line length, retained diagnostics, tool states and configuration. String analysis necessarily also retains the caller's string. Streaming does not accumulate the file. Large individual chunks belong to the caller and may briefly coexist with decoded text.
 
-Run `npm run bench` for generated linear-motion workloads in both string and stream modes. Results depend on hardware, runtime and profile complexity. The benchmark checks distance and move count before reporting throughput. It is a baseline, not a claim about all real slicer files.
+Run `bun run bench` for generated linear-motion workloads in both string and stream modes. Results depend on hardware, runtime and profile complexity. The benchmark checks distance and move count before reporting throughput. It is a baseline, not a claim about all real slicer files.
 
 ## Testing and future work
 

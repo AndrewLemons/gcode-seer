@@ -49,11 +49,11 @@ A tool identifies a material/extruder context. A heater identifies physical ther
 
 ```ts
 const printer: PrinterProfile = {
-  name: 'Shared-nozzle example',
-  tools: [
-    { id: 0, heater: 'nozzle', filamentDiameter: 1.75, maxTemperature: 280 },
-    { id: 1, heater: 'nozzle', filamentDiameter: 1.75, maxTemperature: 280 },
-  ],
+	name: "Shared-nozzle example",
+	tools: [
+		{ id: 0, heater: "nozzle", filamentDiameter: 1.75, maxTemperature: 280 },
+		{ id: 1, heater: "nozzle", filamentDiameter: 1.75, maxTemperature: 280 },
+	],
 };
 ```
 
@@ -63,12 +63,12 @@ For machines whose explicit temperature T parameter addresses a physical heater 
 
 ```ts
 const printer: PrinterProfile = {
-  name: 'Example with explicit heater selectors',
-  tools: [
-    { id: 0, heater: 'left', maxTemperature: 280 },
-    { id: 1, heater: 'right', maxTemperature: 280 },
-  ],
-  heaterTargets: { 0: 'left', 1: 'right' },
+	name: "Example with explicit heater selectors",
+	tools: [
+		{ id: 0, heater: "left", maxTemperature: 280 },
+		{ id: 1, heater: "right", maxTemperature: 280 },
+	],
+	heaterTargets: { 0: "left", 1: "right" },
 };
 ```
 
@@ -82,11 +82,11 @@ A command adapter translates a command into supported commands. Returning `undef
 
 ```ts
 const adapter: CommandAdapter = {
-  name: 'shop-status',
-  translate(command) {
-    if (command.code !== 'SHOP_STATUS') return undefined;
-    return []; // This local macro only updates the display.
-  },
+	name: "shop-status",
+	translate(command) {
+		if (command.code !== "SHOP_STATUS") return undefined;
+		return []; // This local macro only updates the display.
+	},
 };
 ```
 
@@ -96,25 +96,21 @@ Rules add constraints using normalized events:
 
 ```ts
 const rule: AnalysisRule = {
-  name: 'no-negative-extrusion',
-  onEvent(event) {
-    if (
-      event.type !== 'move' ||
-      event.extrusion === null ||
-      event.extrusion >= 0
-    ) {
-      return [];
-    }
-    return [
-      {
-        code: 'RETRACTION_FORBIDDEN',
-        line: event.line,
-        category: 'constraint',
-        severity: 'error',
-        message: 'Retraction is disabled for this process.',
-      },
-    ];
-  },
+	name: "no-negative-extrusion",
+	onEvent(event) {
+		if (event.type !== "move" || event.extrusion === null || event.extrusion >= 0) {
+			return [];
+		}
+		return [
+			{
+				code: "RETRACTION_FORBIDDEN",
+				line: event.line,
+				category: "constraint",
+				severity: "error",
+				message: "Retraction is disabled for this process.",
+			},
+		];
+	},
 };
 ```
 

@@ -1,0 +1,11 @@
+[run]
+bun = true
+
+[test]
+root = "./test"
+coverageReporter = ["text", "lcov"]
+coverageDir = "coverage"
+coverageSkipTestFiles = true
+coveragePathIgnorePatterns = ["scripts/**", "examples/**", "dist/**"]
+# Bun enforces line and function coverage; it does not enforce branch coverage.
+coverageThreshold = { lines = 0.90, functions = 0.95 }

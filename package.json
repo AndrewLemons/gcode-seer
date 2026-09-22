@@ -1,58 +1,59 @@
 {
-  "name": "gcode-seer",
-  "version": "0.1.0",
-  "description": "Streaming, typed G-code analysis with printer constraints and explicit uncertainty.",
-  "type": "module",
-  "main": "./dist/index.js",
-  "types": "./dist/index.d.ts",
-  "exports": {
-    ".": {
-      "types": "./dist/index.d.ts",
-      "import": "./dist/index.js",
-      "default": "./dist/index.js"
-    }
-  },
-  "files": [
-    "dist",
-    "src",
-    "docs",
-    "README.md",
-    "CHANGELOG.md",
-    "LICENSE"
-  ],
-  "sideEffects": false,
-  "engines": {
-    "node": ">=22.18"
-  },
-  "scripts": {
-    "build": "tsc -p tsconfig.build.json",
-    "typecheck": "tsc --noEmit",
-    "test": "vitest run",
-    "test:coverage": "vitest run --coverage",
-    "lint": "eslint .",
-    "format": "prettier --write .",
-    "format:check": "prettier --check .",
-    "check": "npm run typecheck && npm run lint && npm test && npm run build",
-    "bench": "npm run build && node scripts/benchmark.ts",
-    "prepack": "npm run build",
-    "pack:check": "npm run build && node scripts/pack-check.ts"
-  },
-  "keywords": [
-    "gcode",
-    "3d-printing",
-    "bambu",
-    "analyzer",
-    "typescript"
-  ],
-  "license": "MIT",
-  "devDependencies": {
-    "@eslint/js": "^10.0.1",
-    "@types/node": "^26.6.2",
-    "@vitest/coverage-v8": "^5.0.1",
-    "eslint": "^10.11.0",
-    "prettier": "^3.9.8",
-    "typescript": "^6.0.3",
-    "typescript-eslint": "^8.70.1",
-    "vitest": "^5.0.1"
-  }
+	"name": "gcode-seer",
+	"version": "0.1.0",
+	"description": "Streaming, typed G-code analysis with printer constraints and explicit uncertainty.",
+	"keywords": [
+		"3d-printing",
+		"analyzer",
+		"bambu",
+		"gcode",
+		"typescript"
+	],
+	"license": "MIT",
+	"files": [
+		"dist",
+		"src",
+		"docs",
+		"README.md",
+		"CHANGELOG.md",
+		"LICENSE"
+	],
+	"type": "module",
+	"sideEffects": false,
+	"main": "./dist/index.js",
+	"types": "./dist/index.d.ts",
+	"exports": {
+		".": {
+			"types": "./dist/index.d.ts",
+			"import": "./dist/index.js",
+			"default": "./dist/index.js"
+		}
+	},
+	"scripts": {
+		"build": "bun run scripts/build.ts",
+		"typecheck": "bun --bun tsc --noEmit",
+		"test": "bun test",
+		"test:watch": "bun test --watch",
+		"test:coverage": "bun test --coverage",
+		"lint": "bun --bun oxlint --deny-warnings",
+		"lint:fix": "bun --bun oxlint --fix",
+		"format": "bun --bun oxfmt --write .",
+		"format:check": "bun --bun oxfmt --check .",
+		"check": "bun run format:check && bun run typecheck && bun run lint && bun run test:coverage && bun run build",
+		"bench": "bun run build && bun scripts/benchmark.ts",
+		"prepack": "bun run build",
+		"pack:check": "bun run build && bun scripts/pack-check.ts",
+		"prepare": "bun scripts/setup-hooks.ts",
+		"commit:check": "bun scripts/check-commit.ts"
+	},
+	"devDependencies": {
+		"@types/bun": "^1.4.2",
+		"oxfmt": "^0.70.0",
+		"oxlint": "^1.85.0",
+		"typescript": "^6.0.3"
+	},
+	"engines": {
+		"bun": ">=1.4.2"
+	},
+	"packageManager": "bun@1.4.2"
 }
