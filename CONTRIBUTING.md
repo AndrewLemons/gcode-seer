@@ -1,6 +1,31 @@
 # Contributing
 
-Use Bun 1.4.2 or later and `bun install --frozen-lockfile`. Run `bun run check`, `bun run test:coverage` and `bun run format:check` before submitting changes.
+## Make a change
+
+1. Fork the repository if you do not have write access, clone it, and create a branch from `main`:
+
+   ```sh
+   git switch -c feat/my-feature
+   bun install --frozen-lockfile
+   ```
+
+2. Use the Bun version in `.bun-version`. Add behavioral tests and update the relevant API or extension documentation with your change.
+3. Run the checks, then commit with a Conventional Commit message:
+
+   ```sh
+   bun run format
+   bun run check
+   bun run pack:check
+   git add <changed-files>
+   git commit -m "feat(parser): support a new command"
+   ```
+
+4. Push your branch and open a pull request against `main`. Use a Conventional Commit title describing the user-visible change. Complete the PR template, explain how you tested the change, and link any related issue.
+5. Address review feedback and keep the branch current by rebasing on `main`. Maintainers **squash merge** after both required checks pass. Check the final squash message: its title determines the release bump, and its body must preserve any breaking-change explanation.
+
+Do not change `package.json`'s version, `.release-please-manifest.json`, or `CHANGELOG.md` in feature PRs. Release Please maintains them automatically. After your PR merges, its commit contributes to the next release PR; merging that release PR publishes the package. See [the release guide](docs/releasing.md) for maintainer setup and recovery.
+
+## Design and tests
 
 See [the extension guide](docs/extending.md) for the module boundaries and paths for adding printer makes, firmware behavior, commands and checks.
 
@@ -12,25 +37,50 @@ Keep the parser independent of printer state, geometry independent of G-code syn
 
 Run `bun run bench` when changing the hot path and record the workload and runtime alongside results. Tests should verify externally meaningful behavior, not private implementation structure.
 
-Before publishing, confirm package ownership and metadata, update the changelog, run `bun run pack:check`, and inspect the tarball contents. Publishing is a separate maintainer action.
-
 ## Tooling and style
 
 The development and CI version is pinned in `.bun-version` and `package.json`.
-Use Bun for dependency changes, scripts, and tests. Commit `bun.lock`; CI installs with `--frozen-lockfile`.
+Use Bun for dependency changes, scripts, tests, packaging, and publishing. Commit `bun.lock`; CI installs with `--frozen-lockfile`.
 Oxfmt owns formatting (tabs, double quotes, 100-column target), and Oxlint checks correctness and requires braces.
 Run `bun run format` to format changes and `bun run lint:fix` for automatic lint fixes.
 YAML and Markdown use spaces where their syntax requires them.
 `bun run check` includes formatting, type checking, linting, coverage, and a clean build.
+`bun run pack:check` installs the actual tarball in an isolated consumer and checks its runtime exports and TypeScript declarations.
 Bun runs TypeScript's compiler to emit ESM and declarations without bundling the library.
 Coverage requires 90% lines and 95% functions and writes `coverage/lcov.info`; Bun does not enforce branch thresholds.
+The generated changelog and release manifest are excluded from formatting so bot-generated releases pass CI without manual reformatting.
 
-## Commits
+## Conventional Commits
 
-Use Conventional Commits: `type(scope): description`, with an optional scope or `!` for breaking changes.
+Use `type(scope): description`, with an optional scope or `!` for breaking changes.
 Allowed types are `feat`, `fix`, `docs`, `style`, `refactor`, `perf`, `test`, `build`, `ci`, `chore`, and `revert`.
-Keep the subject within 100 characters; describe breaking changes in the commit body.
-For example: `refactor(parser): clarify checksum validation`.
+Subjects must be at most 100 characters with no trailing whitespace. Keep PR titles short enough to allow GitHub's appended ` (#number)` in the squash commit.
 
-`bun install` enables the tracked `.githooks/commit-msg` hook for this checkout.
-Run `bun run prepare` if hooks need reinstalling. CI validates all commits in pull requests.
+| Change                   | Example                                        | Release effect                          |
+| ------------------------ | ---------------------------------------------- | --------------------------------------- |
+| Feature                  | `feat(profiles): add a printer preset`         | Minor                                   |
+| Fix                      | `fix(parser): handle checksummed comments`     | Patch                                   |
+| Performance              | `perf(analyzer): reduce streaming allocations` | Patch                                   |
+| Breaking API or behavior | `feat(api)!: rename report fields`             | Minor before 1.0; major from 1.0 onward |
+| Other work               | `docs: clarify configuration options`          | No release by itself                    |
+
+Use `!` in both the PR title and commit subject for breaking changes, and explain the migration in the PR body:
+
+```text
+feat(api)!: rename report fields
+
+BREAKING CHANGE: Replace report.oldField with report.newField.
+```
+
+The `!` survives squash merging even if a footer is accidentally removed. Keep the footer in the final squash body so the release notes explain the migration. For the first stable release, a maintainer can add a `Release-As: 1.0.0` footer to a commit; see the release guide.
+
+`bun install` enables the tracked `.githooks/commit-msg` hook. Run `bun run prepare` if hooks need reinstalling. CI checks **every PR commit and the PR title**, including title edits, and checks new commits pushed to `main`. Hooks alone cannot enforce repository policy; the required checks and squash-only repository settings described in the release guide complete enforcement.
+
+To check locally:
+
+```sh
+bun run commit:check --range origin/main..HEAD
+PR_TITLE='feat(parser): support a new command' bun run commit:check --title
+```
+
+To fix the latest commit, use `git commit --amend`; for earlier commits, use `git rebase -i origin/main`. If the branch is already pushed, update your own branch with `git push --force-with-lease`. Do not bypass the hook or force-push `main`.

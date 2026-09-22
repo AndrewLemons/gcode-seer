@@ -36,4 +36,7 @@ It reports motion, extrusion, heater targets, printer constraints, and uncertain
 - Generated `dist/`, `coverage/`, and `node_modules/` stay out of Git.
 - Use Conventional Commits, e.g. `fix(parser): handle checksummed comments`.
 - `bun install` configures the local commit-message hook; `bun run prepare` reinstalls it.
+- PR titles and commits must use Conventional Commits; maintainers squash merge after CI passes.
+- Release Please owns package versions and `CHANGELOG.md`; do not edit them in feature PRs.
+- Releases publish with Bun and an npm environment token; see `docs/releasing.md` for setup and registry-policy limits.
 - See `CONTRIBUTING.md` for contribution and release expectations.
