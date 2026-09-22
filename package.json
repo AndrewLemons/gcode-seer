@@ -1,12 +1,19 @@
 {
 	"name": "gcode-seer",
 	"version": "0.1.0",
-	"description": "Streaming, typed G-code analysis with printer constraints and explicit uncertainty.",
+	"description": "Dependency-free TypeScript and JavaScript library for streaming 3D printer G-code analysis: motion, extrusion, temperatures and printer constraints.",
 	"keywords": [
+		"3d-printer",
 		"3d-printing",
 		"analyzer",
 		"bambu",
+		"extrusion",
+		"g-code",
 		"gcode",
+		"gcode-parser",
+		"javascript",
+		"prusa",
+		"streaming",
 		"typescript"
 	],
 	"homepage": "https://github.com/AndrewLemons/gcode-seer#readme",
@@ -14,6 +21,7 @@
 		"url": "https://github.com/AndrewLemons/gcode-seer/issues"
 	},
 	"license": "MIT",
+	"author": "Andrew Lemons",
 	"repository": {
 		"type": "git",
 		"url": "git+https://github.com/AndrewLemons/gcode-seer.git"
