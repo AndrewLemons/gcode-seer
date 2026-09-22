@@ -1,8 +1,17 @@
 export { analyze, analyzeStream, GcodeAnalyzer } from "./analyzer.js";
 export { parseLine } from "./parser.js";
 export { Interpreter } from "./interpreter.js";
-export { createPrinterProfile, listPrinterProfiles } from "./printer-catalog.js";
-export type { PrinterProfileInfo, PrinterProfileOptions } from "./printer-catalog.js";
+export {
+	createPrinterCatalog,
+	createPrinterProfile,
+	listPrinterProfiles,
+} from "./printer-catalog.js";
+export type {
+	PrinterDefinition,
+	PhysicalExtruder,
+	PrinterProfileInfo,
+	PrinterProfileOptions,
+} from "./printer-catalog.js";
 export {
 	marlinDialect,
 	klipperDialect,

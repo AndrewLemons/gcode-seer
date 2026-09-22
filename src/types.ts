@@ -26,13 +26,13 @@ export interface HeaterProfile {
 
 export interface ProfileProvenance {
 	id: string;
-	manufacturer: "Bambu Lab" | "Prusa";
+	manufacturer: string;
 	reviewedAt: string;
 	sources: readonly string[];
 	notes: readonly string[];
 }
 
-export type MultiMaterialUpgrade = "mmu1" | "mmu2" | "mmu2s" | "mmu3";
+export type MultiMaterialUpgrade = string;
 
 export interface Exclusion {
 	id: string;

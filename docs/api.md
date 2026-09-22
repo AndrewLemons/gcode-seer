@@ -125,3 +125,38 @@ const rule: AnalysisRule = {
 Create separate instances of stateful rules for concurrent analyses. Event consumers should treat event data as read-only. Avoid storing every event when processing large files.
 
 Geometry helpers are exported for visualization or additional checks: `createArc`, `pathBounds`, `pathLength`, `pointAt`, `pointInPolygon`, `intersectsExclusion`, `containsBox`, `containsPathInCircle` and `containsPathInPolygon`. Direct helper callers must supply finite, valid geometry; profile validation handles this for the main analysis APIs.
+
+### Custom printer catalogs
+
+`createPrinterCatalog(definitions)` creates an isolated catalog exposing the same
+`listPrinterProfiles(manufacturer?)` and `createPrinterProfile(id, options?)` methods
+as the bundled catalog. `PrinterDefinition` describes hardware capabilities and
+provenance; manufacturer names and upgrade IDs are open strings. Definitions are
+snapshotted, duplicate IDs are rejected, and returned profiles are independent.
+
+```ts
+import { createPrinterCatalog, marlinDialect } from "gcode-seer";
+
+const catalog = createPrinterCatalog([
+	{
+		id: "workshop-cartesian",
+		name: "Workshop Cartesian",
+		manufacturer: "Workshop",
+		reviewedAt: "2026-09-22",
+		sources: [], // Add verified hardware/firmware sources for distributed presets.
+		notes: ["Example configuration; replace with verified machine limits."],
+		dialect: marlinDialect,
+		toolCounts: [1],
+		size: [200, 200, 200],
+		filamentDiameter: 1.75,
+	},
+]);
+const printer = catalog.createPrinterProfile("workshop-cartesian");
+```
+
+Physical extruders can declare heater names, temperature selectors, and individual
+print bounds. `materialMapping: "explicit"` requires a job's `materialTools` mapping;
+`heaterSelection` specifies whether explicit temperature selectors address material
+tools or physical heaters. `upgrades` maps upgrade IDs to material slot counts sharing
+extruder zero. `bedTemperatures` maps supported supply voltages to verified limits.
+These capabilities apply equally to every manufacturer.

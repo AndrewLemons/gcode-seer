@@ -2,7 +2,7 @@ import { Collector } from "./collector.js";
 import { LineFramer } from "./line-framer.js";
 import { Interpreter } from "./interpreter.js";
 import { parseLine } from "./parser.js";
-import { validateOptions } from "./profiles.js";
+import { validateOptions } from "./configuration/options.js";
 import type { AnalysisReport, AnalyzeOptions } from "./types.js";
 
 /** Incremental analyzer accepting complete physical lines. finish() closes the instance. */

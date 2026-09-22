@@ -1,189 +1,23 @@
+import { commonNotes, reviewedAt } from "../notes.js";
+import type { PrinterDefinition, Size } from "../types.js";
+import { bounds, rectangle } from "../geometry.js";
+type Definition = PrinterDefinition;
 import {
-	bambuDialect,
 	klipperDialect,
 	prusaBuddyDialect,
 	prusaDialect,
 	prusaLegacyDialect,
-} from "./dialects.js";
-import type { Dialect, MultiMaterialUpgrade } from "./types.js";
-
-export const reviewedAt = "2026-09-22";
-const bblSource =
-	"https://github.com/bambulab/BambuStudio/tree/f977235e6d736c4c0b650520ac5a5b72cbfe9244/resources/profiles/BBL/machine";
-const prusaSource =
-	"https://github.com/prusa3d/PrusaSlicer-settings-prusa-fff/blob/65c5c8f1e1c3836f306119c49d717759cbc368db/PrusaResearch/2.5.10.ini";
-const buddySource =
-	"https://github.com/prusa3d/Prusa-Firmware-Buddy/tree/1ce23f33ed3b94e26aa33a44557d6c4a4be11eb6/include/marlin";
-const avrSource =
-	"https://github.com/prusa3d/Prusa-Firmware/tree/f3e0dfd481a78b222d2a82752f261adbc5a2c4d7/Firmware";
-const legacySource =
-	"https://github.com/prusa3d/Prusa-Firmware/tree/61161b705e9a7a6f5ef5af4e52382987816e7995/Firmware";
-const archivedSource =
-	"https://github.com/prusa3d/PrusaSlicer-settings/tree/a40f669e7c3ff4dfe05a937fc08fc57993dcf0d5/old";
-const prusaUpdates =
-	"https://blog.prusa3d.com/better-prints-easier-use-prusa-xl-core-one-l-and-core-one-gen-2-our-big-product-update_137539/";
-export const commonNotes = [
-	"Printable geometry does not establish service travel or a homing endpoint.",
-	"Firmware calibration, mesh compensation, tool-change trajectories and runtime branches are not simulated.",
-	"No universal material flow limit is assumed. Speeds are requested tool-tip speeds, not measured motion.",
-];
-
-export type Size = readonly [x: number, y: number, z: number];
-export interface Definition {
-	id: string;
-	name: string;
-	manufacturer: "Bambu Lab" | "Prusa";
-	sources: readonly string[];
-	notes: readonly string[];
-	size?: Size;
-	nozzle?: number;
-	bed?: number;
-	chamber?: number;
-	speed?: number;
-	dialect: Dialect;
-	toolCounts: readonly number[];
-	parkTool?: number;
-	mmu?: readonly MultiMaterialUpgrade[];
-	bambuDual?: "h2d" | "h2c" | "x2d";
-	exclusion?: boolean;
-	voltageDependentBed?: boolean;
-	circle?: boolean;
-	legacy?: "1.75" | "3";
-	unsupported?: string;
-}
-
-export const definitions: Definition[] = [];
-function bambu(
-	id: string,
-	name: string,
-	size: Size,
-	nozzle: number,
-	bed: number | undefined,
-	source: string,
-	options: Partial<Definition> = {},
-): void {
-	definitions.push({
-		id: `bambu-${id}`,
-		name: `Bambu Lab ${name}`,
-		manufacturer: "Bambu Lab",
-		size,
-		nozzle,
-		...(bed !== undefined ? { bed } : {}),
-		speed: 500,
-		dialect: bambuDialect,
-		toolCounts: [1],
-		sources: [bblSource, source],
-		notes: [],
-		...options,
-	});
-}
-const x1Spec =
-	"https://cdn1.bambulab.com/documentation/Quick%20Start%20Guide%20for%20X1%20Combo%26X1-Carbon%20Combo-v1.pdf";
-bambu(
-	"a1-mini",
-	"A1 mini",
-	[180, 180, 180],
-	300,
-	80,
-	"https://us.store.bambulab.com/products/a1-mini",
-);
-bambu(
-	"a1",
-	"A1",
-	[256, 256, 256],
-	300,
-	100,
-	"https://cdn1.bambulab.com/documentation/quick-start-a75adcb1d5d5e/Quick%20Start%20Guide%20for%20A1.pdf",
-);
-bambu("a2l", "A2L", [330, 320, 325], 300, 80, "https://bambulab.cn/zh-cn/a2l/specs");
-bambu(
-	"p1p",
-	"P1P",
-	[256, 256, 250],
-	300,
-	100,
-	"https://public-cdn.bambulab.com/store/bambulab-P1P-tech-specs.pdf",
-	{ exclusion: true },
-);
-bambu(
-	"p1s",
-	"P1S",
-	[256, 256, 250],
-	300,
-	100,
-	"https://us.store.bambulab.com/collections/3d-printer/products/p1s",
-	{ exclusion: true },
-);
-bambu("p2s", "P2S", [256, 256, 256], 300, 110, "https://bambulab.cn/zh-cn/p2s/specs", {
-	speed: 600,
-	notes: [
-		"The published 600 mm/s toolhead limit differs from the slicer's 1000 mm/s axis planner defaults.",
-	],
-});
-bambu("x1", "X1", [256, 256, 250], 300, undefined, x1Spec, {
-	exclusion: true,
-	voltageDependentBed: true,
-});
-bambu("x1-carbon", "X1 Carbon", [256, 256, 250], 300, undefined, x1Spec, {
-	exclusion: true,
-	voltageDependentBed: true,
-});
-bambu(
-	"x1e",
-	"X1E",
-	[256, 256, 250],
-	320,
-	undefined,
-	"https://cdn1.bambulab.com/x1e/spec/bambu-lab-x1e-tech-specs-cn.pdf",
-	{ exclusion: true, voltageDependentBed: true, chamber: 60 },
-);
-bambu("h2s", "H2S", [340, 320, 340], 350, 120, "https://bambulab.cn/zh-cn/series/h2", {
-	speed: 1000,
-	chamber: 65,
-});
-bambu("h2d", "H2D", [350, 320, 325], 350, 120, "https://bambulab.cn/zh-cn/h2d/tech-specs", {
-	speed: 1000,
-	chamber: 65,
-	bambuDual: "h2d",
-	toolCounts: [2],
-});
-bambu(
-	"h2d-pro",
-	"H2D Pro",
-	[350, 320, 325],
-	350,
-	120,
-	"https://bambulab.cn/zh-cn/h2d-pro/tech-specs",
-	{ speed: 1000, chamber: 65, bambuDual: "h2d", toolCounts: [2] },
-);
-bambu(
-	"h2c",
-	"H2C",
-	[330, 320, 325],
-	350,
-	120,
-	"https://blog.bambulab.com/bambu-lab-h2c-where-multi-material-vortek-system-meets-engineering-precision/",
-	{
-		speed: 1000,
-		chamber: 65,
-		bambuDual: "h2c",
-		toolCounts: [2],
-		notes: [
-			"Six exchangeable Vortek hotends on the right are not six independent carriages. Hotend exchange and H selectors remain unmodeled.",
-			"Slicer per-extruder heights (320/325 mm) take precedence over the launch article's 325 mm dual height.",
-		],
-	},
-);
-bambu("x2d", "X2D", [256, 256, 260], 300, 120, "https://bambulab.cn/zh-cn/x2d/specs", {
-	speed: 1000,
-	chamber: 65,
-	bambuDual: "x2d",
-	toolCounts: [2],
-	notes: [
-		"Published main-nozzle height is 260 mm; the reviewed slicer says 261 mm. This preset uses 260 mm.",
-	],
-});
-
+} from "../../dialects.js";
+import {
+	prusaSource,
+	buddySource,
+	avrSource,
+	legacySource,
+	archivedSource,
+	prusaUpdates,
+} from "./sources.js";
+export const prusaDefinitions: PrinterDefinition[] = [];
+const definitions = prusaDefinitions;
 function prusa(
 	id: string,
 	name: string,
@@ -201,9 +35,13 @@ function prusa(
 		...(bed !== undefined ? { bed } : {}),
 		dialect: prusaBuddyDialect,
 		toolCounts: [1],
+		heaterSelection: "material",
+		filamentDiameter: 1.75,
 		sources: [prusaSource, buddySource],
-		notes: [],
+		reviewedAt,
+
 		...options,
+		notes: [...commonNotes, ...(options.notes ?? [])],
 	});
 }
 for (const [id, name] of [
@@ -212,7 +50,7 @@ for (const [id, name] of [
 ] as const) {
 	prusa(id, name, [250, 210, 200], 300, 120, {
 		dialect: prusaLegacyDialect,
-		mmu: ["mmu1"],
+		upgrades: { mmu1: 4 },
 		sources: [prusaSource, legacySource],
 		notes: [
 			"Legacy v3.2.3 positioning semantics; 200 mm slicer height differs from 210 mm firmware travel.",
@@ -229,7 +67,7 @@ for (const [id, name, mmu] of [
 ] as const) {
 	prusa(id, name, [250, 210, id.startsWith("mk2") ? 200 : 210], 300, 120, {
 		dialect: prusaDialect,
-		mmu,
+		upgrades: Object.fromEntries(mmu.map((id) => [id, 5])),
 		sources: [
 			prusaSource,
 			avrSource,
@@ -249,7 +87,7 @@ for (const [id, name, z] of [
 	["mk4", "MK4", 220],
 	["mk4s", "MK4S", 220],
 ] as const) {
-	prusa(id, name, [250, 210, z], 290, 120, { mmu: ["mmu3"] });
+	prusa(id, name, [250, 210, z], 290, 120, { upgrades: { mmu3: 5 } });
 }
 for (const [id, name] of [
 	["mini", "MINI"],
@@ -281,7 +119,7 @@ for (const [id, name] of [
 ] as const) {
 	prusa(id, name, [250, 220, 270], 290, 120, {
 		chamber: 55,
-		mmu: ["mmu3"],
+		upgrades: { mmu3: 5 },
 		sources: [prusaSource, buddySource, prusaUpdates],
 	});
 }
@@ -294,7 +132,7 @@ for (const [id, name] of [
 ] as const) {
 	prusa(id, name, [300, 300, 330], 290, 120, {
 		chamber: 60,
-		mmu: ["mmu3"],
+		upgrades: { mmu3: 5 },
 		sources: [prusaSource, buddySource, coreLSource, prusaUpdates],
 	});
 }
@@ -339,7 +177,8 @@ for (const [id, name, temp] of [
 ] as const) {
 	prusa(id, name, [300, 300, 400], temp, 155, {
 		dialect: klipperDialect,
-		circle: true,
+		printCircle: { center: { x: 0, y: 0 }, radius: 150 },
+		printBounds: bounds([150, 150, 400], [-150, -150, 0]),
 		chamber: 90,
 		speed: 600,
 		sources: [
@@ -369,7 +208,23 @@ for (const [id, name, legacy] of [
 ] as const) {
 	prusa(id, name, undefined, undefined, undefined, {
 		dialect: prusaLegacyDialect,
-		legacy,
+		printArea: rectangle(0, legacy === "3" ? 3 : 0, 200, legacy === "3" ? 203 : 200),
+		filamentDiameter: legacy === "3" ? 2.9 : 1.75,
+		...(legacy === "1.75"
+			? {
+					travelBounds: bounds([214, 198, 201], [0, 0, 0.23]),
+					exclusions: [
+						[10, 0, 30, 5],
+						[170, 0, 190, 5],
+						[10, 195, 30, 200],
+						[170, 195, 190, 200],
+					].map(([x, y, x2, y2], i) => ({
+						id: `glass-clip-${i}`,
+						polygon: rectangle(x!, y!, x2!, y2!),
+						appliesTo: "extrusion" as const,
+					})),
+				}
+			: {}),
 		sources: [
 			archivedSource,
 			legacySource,
@@ -402,6 +257,7 @@ for (const [id, name, source] of [
 	prusa(id, name, undefined, undefined, undefined, {
 		toolCounts: [],
 		unsupported: resinReason,
+		technology: "SLA",
 		sources: [source],
 		notes: [resinReason],
 	});
