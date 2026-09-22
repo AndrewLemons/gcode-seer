@@ -1,4 +1,4 @@
-# Extending Gcode Seer
+# Extending G-code Seer
 
 Every printer uses the same builder, every modeled command uses the same state and
 event contracts, and every constraint consumes normalized events. Keep hardware

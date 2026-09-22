@@ -13,6 +13,26 @@ For an existing line reader, instantiate `GcodeAnalyzer`, call `addLine(line)` f
 
 `parseLine(raw, lineNumber?)` provides the lexer independently. `Interpreter` exposes stateful command processing through `process(command)` and a copied `finalPosition`. Most applications should use the analysis APIs, which also validate options, frame lines and aggregate diagnostics.
 
+Streaming memory use is bounded by the current line, retained diagnostics, configuration and at most 256 tool states. The analyzer does not retain the toolpath. A caller that collects events is responsible for that storage.
+
+## Reading the report
+
+Reports separate validity, constraint results and completeness. Read aggregate metrics alongside `complete` and `diagnostics`: unknown portions are omitted, and unresolved values are represented by `null` where applicable. Maxima and totals describe modeled portions, not whole-file estimates when analysis is incomplete. Diagnostics include physical line numbers.
+
+The report includes:
+
+- Travel and extruding-move bounds, including arc extrema.
+- Printable-area and exclusion checks along entire modeled paths.
+- Maximum requested feedrate and component speeds for X, Y, Z and E.
+- Heater target ranges, active target ranges, final observed targets and wait counts.
+- Extrusion, retraction and net filament length per tool.
+- Volumetric flow when a filament diameter is provided.
+- Constant-feed motion time plus explicit dwells.
+
+Output uses millimeters, seconds and Celsius. Motion time does not include acceleration or a complete simulation of firmware scheduling.
+
+A `passed` constraint result means modeled commands satisfy the supplied limits under documented assumptions. It does not certify a print as safe. Homing trajectories, swept carriage volumes, inactive nozzles, bed meshes and existing objects are outside the model. See [supported commands and limitations](support.md).
+
 ## Options
 
 | Option             | Default                           | Purpose                                                                                                               |

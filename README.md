@@ -1,132 +1,79 @@
-# Gcode Seer
+# G-code Seer
 
-A TypeScript library for analyzing 3D printer G-code. It tracks commanded motion, extrusion, heater targets and printer constraints, and reports where the available information is incomplete.
+[![npm version](https://img.shields.io/npm/v/gcode-seer)](https://www.npmjs.com/package/gcode-seer)
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue)](LICENSE)
 
-The core has no runtime dependencies and no filesystem access. Use it with strings, streamed UTF-8 data, or individual lines. Output uses millimeters, seconds and Celsius.
+G-code Seer is a dependency-free TypeScript and JavaScript library for **3D printer G-code analysis**. Analyze motion, extrusion, heater targets and printer constraints from text or streaming files, with explicit diagnostics when information is incomplete.
 
-## Status
+Use it to build G-code inspection tools, check print jobs against printer profiles, or process large files without retaining the toolpath. It includes Bambu Lab and Prusa printer profiles and exports ESM with TypeScript declarations. The core performs no file or network I/O and works in Bun and modern browsers.
 
-Version 0.1 is a foundation for static analysis, with conservative handling of unsupported behavior. It supports common Cartesian printing commands and XY arcs. It does not emulate an entire printer firmware.
-
-The built-in catalog covers Bambu Lab and Prusa FFF printers, with explicit hardware configuration and research provenance. Full slicer files can contain startup operations, conditional blocks and tool changes that make a report incomplete. Printer constraints do not imply complete firmware emulation. See the [printer catalog](docs/printers.md) and [support matrix](docs/support.md).
-
-## Install and use
-
-Once published:
+## Install
 
 ```sh
 bun add gcode-seer
 ```
 
-The package exports ESM and TypeScript declarations. Bun 1.4.2 or later is the development baseline. The core also works in modern browsers with `TextDecoder`, `structuredClone` and async iteration.
+The published package is available on [npm](https://www.npmjs.com/package/gcode-seer).
+
+## Quick start
 
 ```ts
-import { analyze, type PrinterProfile } from "gcode-seer";
+import { analyze } from "gcode-seer";
 
-const printer: PrinterProfile = {
-	name: "Example Cartesian printer",
-	homePosition: { x: 0, y: 0, z: 0 },
-	travelBounds: {
-		min: { x: 0, y: 0, z: 0 },
-		max: { x: 250, y: 250, z: 250 },
-	},
-	maxSpeed: { x: 300, y: 300, z: 15, e: 40 },
-	maxBedTemperature: 110,
-	tools: [{ id: 0, heater: "hotend", maxTemperature: 280 }],
-};
-
-const report = analyze("G28\nG92 E0\nM104 S210\nG1 X50 Y50 Z0.2 E2 F1800", {
-	printer,
+const report = analyze("G21\nG90\nM82\nG92 E0\nG1 X3 Y4 E1 F600", {
+	initialPosition: { x: 0, y: 0, z: 0 }, // Supply only a known starting position.
 });
 
-console.log(report.validity); // 'valid'
-console.log(report.constraints); // 'passed'
-console.log(report.maxAxisSpeed); // x, y, z and e, in mm/s
-console.log(report.temperatures.hotend?.targets); // { min: 210, max: 210 }
+console.log(report.distance.total); // 5 mm
+console.log(report.maxAxisSpeed.x); // 6 mm/s
+console.log(report.validity); // "valid"
+console.log(report.complete); // true
+console.log(report.diagnostics); // []
 ```
 
-`passed` means the modeled commands satisfy the supplied constraints under the documented assumptions. It does not certify that printing the file is safe. Homing trajectories, the carriage, inactive nozzles, bed meshes and existing objects are outside this model.
+Save this as `analyze.ts` and run it with `bun run analyze.ts`. Position starts unknown unless established by the input or supplied explicitly. Output uses millimeters, seconds and Celsius.
 
-## What the report includes
+### Check printer limits
 
-- Syntax and command diagnostics with physical line numbers.
-- Separate validity, constraint and completeness results.
-- Travel and extruding-move bounds, including arc extrema.
-- Polygon exclusion intersections along entire paths, optionally limited by height.
-- Rectangular, circular and polygonal printable areas, including per-nozzle reach.
-- Maximum requested feedrate and component speeds for X, Y, Z and E.
-- Heater target ranges, active target ranges, final observed targets and wait counts.
-- Extrusion, retraction and net filament length per tool.
-- Volumetric flow when a filament diameter is provided.
-- Constant-feed motion time plus explicit dwells.
+```ts
+import { analyze, createPrinterProfile } from "gcode-seer";
 
-Unknown portions are omitted from metrics. Missing values are represented by `null` where a value cannot be resolved. Aggregate maxima and totals cover the modeled portions and must be read with `complete` and the diagnostics. They are not whole-file estimates when analysis is incomplete.
+const printer = createPrinterProfile("prusa-mk4s");
+const report = analyze("M104 S291", { printer });
 
-## Stream a file
+console.log(report.constraints); // "violated": exceeds the 290 °C hotend target limit.
+console.log(report.diagnostics);
+```
+
+Choose a built-in profile and installed hardware from the [printer catalog](docs/printers.md), or supply a [custom printer profile](docs/api.md#printer-profiles).
+
+### Stream a file
 
 ```ts
 import { analyzeStream } from "gcode-seer";
 
 const report = await analyzeStream(Bun.file("part.gcode").stream(), {
-	printer,
 	maxDiagnostics: 500,
 });
+
+console.log(report.distance.total);
+console.log(report.complete);
 ```
 
-Memory use is bounded by the current line, retained diagnostics, configuration and at most 256 tool states. The analyzer does not retain the toolpath. A caller that collects events is responsible for that storage. Invalid UTF-8 and stream errors reject the promise.
+`analyzeStream` accepts iterable or async iterable text and UTF-8 chunks. For an existing line reader, use [`GcodeAnalyzer`](docs/api.md#input-apis).
 
-## Built-in printers
+Read metrics alongside `complete` and `diagnostics`: unsupported behavior can leave parts of a file unanalyzed. A `passed` constraint result applies to configured limits and modeled commands; it does not certify a print as safe. See [report semantics](docs/api.md#reading-the-report) and [supported commands and limitations](docs/support.md).
 
-```ts
-import { analyze, createPrinterProfile, listPrinterProfiles } from "gcode-seer";
+## Documentation
 
-const available = listPrinterProfiles("Prusa");
-const printer = createPrinterProfile("prusa-mk4s", { multiMaterial: "mmu3" });
-const report = analyze("M104 S291", { printer });
-// A temperature-limit violation: the reviewed Buddy target cap is 290 °C.
-```
+- [API reference](docs/api.md): input methods, report metrics, options and custom profiles.
+- [Printer catalog](docs/printers.md): Bambu Lab and Prusa models and hardware configuration.
+- [Supported commands](docs/support.md): firmware coverage, assumptions and limitations.
+- [Extension guide](docs/extending.md) and [architecture](docs/architecture.md): add printers, commands and checks.
+- [Research sources](docs/research.md) and [printer research](docs/printer-research.md): evidence behind the model.
 
-Profiles cover all 14 reviewed Bambu models and Prusa's legacy i3, MK, MINI, XL, CORE One, INDX, HT90 and AFS families. Select installed XL/INDX tools, MMU upgrades, Bambu material-to-nozzle mappings and X1 supply voltage explicitly. Resin printers are listed as unavailable because their layer/exposure archives are not extrusion G-code.
+## Contributing
 
-See [configuration examples and IDs](docs/printers.md) and the [per-printer research audit](docs/printer-research.md), including source revisions, discrepancies and unverified legacy limits.
+Bug reports, documentation improvements and pull requests are welcome. Use the Bun version pinned in [`.bun-version`](.bun-version), then run `bun install --frozen-lockfile` and `bun run check` in your clone. See [CONTRIBUTING.md](CONTRIBUTING.md) for setup, tests and Conventional Commits, and the [release guide](docs/releasing.md) for publishing.
 
-## Exclusions
-
-Printable geometry and machine travel are separate constraints. Purging, wiping and parking may use coordinates outside the printable bed.
-
-```ts
-import { bambuExclusion, createBambuX1CarbonPrintProfile } from "gcode-seer";
-
-const x1 = createBambuX1CarbonPrintProfile();
-// Slicer print limits: 256 × 256 × 250 mm and the front-left exclusion.
-
-const clamp = bambuExclusion(["40x40", "50x40", "50x60", "40x60"], {
-	id: "bed-clamp",
-	appliesTo: "all",
-	minZ: 0,
-	maxZ: 12,
-});
-```
-
-Use `appliesTo: 'extrusion'` for regions where deposition is prohibited but travel is allowed. Boundary contact with an exclusion counts as a violation. Shrink allowed bounds or enlarge exclusions in your profile when clearance is required. The analyzer checks the tool tip, not a swept carriage volume.
-
-Profiles can define multiple material tools sharing a physical heater, independent E registers, per-tool bounds and separate temperature selectors. Tool-change motion and independent-carriage duplication need machine-specific modeling. See [profiles and extensions](docs/api.md).
-
-## Development
-
-```sh
-bun install --frozen-lockfile
-bun run check
-bun run bench
-bun run pack:check
-```
-
-Tests cover numerical behavior, full-path exclusion checks, modal transitions, streamed chunk boundaries, malformed input, configuration validation and extension behavior. CI uses the Bun version pinned in `.bun-version`.
-
-Contributions use Conventional Commits and squash-merged pull requests. Release Please generates version bumps and the changelog; merging a release PR stages the Bun-built package on npm and opens a maintainer approval task. A maintainer reviews and publishes it with npm 2FA. See [contributing](CONTRIBUTING.md) and [release setup and recovery](docs/releasing.md).
-
-Further reading: [API](docs/api.md), [supported commands and limits](docs/support.md), [architecture](docs/architecture.md), [research sources](docs/research.md), [contributing](CONTRIBUTING.md).
-
-MIT licensed.
-
-See the [extension guide](docs/extending.md) to add printer makes, firmware capabilities, commands or event checks. Custom printer catalogs use the same declarative builder as bundled printers.
+Maintained by [Andrew Lemons](https://github.com/AndrewLemons). Licensed under the [MIT License](LICENSE).

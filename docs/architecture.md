@@ -51,7 +51,7 @@ Create stateful rules per analysis. Catalogs snapshot definitions and return fre
 profiles and metadata. Geometry has no I/O or firmware dependencies. The runtime
 package has no filesystem, network, worker or UI dependencies.
 
-See [Extending Gcode Seer](extending.md) for concrete contribution paths.
+See [Extending G-code Seer](extending.md) for concrete contribution paths.
 
 ## Accuracy decisions
 

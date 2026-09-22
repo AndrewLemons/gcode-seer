@@ -1,7 +1,10 @@
 # Agent onboarding
 
-Gcode Seer is a dependency-free TypeScript library for streaming 3D printer G-code analysis.
+G-code Seer is a dependency-free TypeScript library for streaming 3D printer G-code analysis.
 It reports motion, extrusion, heater targets, printer constraints, and uncertainty.
+
+Use "G-code Seer" in prose and `gcode-seer` for package names, paths, and other technical identifiers.
+The maintainer is Andrew Lemons.
 
 ## Structure
 

@@ -1,15 +1,17 @@
-# Contributing
+# Contributing to G-code Seer
+
+G-code Seer is maintained by [Andrew Lemons](https://github.com/AndrewLemons). Report bugs or suggest improvements in [GitHub issues](https://github.com/AndrewLemons/gcode-seer/issues), or follow the steps below to contribute a change.
 
 ## Make a change
 
-1. Fork the repository if you do not have write access, clone it, and create a branch from `main`:
+1. Install the Bun version pinned in [`.bun-version`](.bun-version). Fork the repository if you do not have write access, clone your fork, and create a branch from `main`:
 
    ```sh
    git switch -c feat/my-feature
    bun install --frozen-lockfile
    ```
 
-2. Use the Bun version in `.bun-version`. Add behavioral tests and update the relevant API or extension documentation with your change.
+2. Make your change. Add behavioral tests for semantic changes and update the relevant API or extension documentation.
 3. Run the checks, then commit with a Conventional Commit message:
 
    ```sh
