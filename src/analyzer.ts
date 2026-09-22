@@ -46,7 +46,7 @@ export class GcodeAnalyzer {
 		if (/[\r\n]/.test(raw)) {
 			throw new TypeError("addLine expects one line without a line terminator.");
 		}
-		const parsed = parseLine(raw, line);
+		const parsed = parseLine(raw, line, this.interpreter.dialect);
 		for (const diagnostic of parsed.diagnostics) {
 			this.collector.diagnostic(diagnostic);
 			this.options.onEvent?.({ type: "diagnostic", diagnostic });

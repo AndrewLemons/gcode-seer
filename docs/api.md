@@ -160,3 +160,18 @@ print bounds. `materialMapping: "explicit"` requires a job's `materialTools` map
 tools or physical heaters. `upgrades` maps upgrade IDs to material slot counts sharing
 extruder zero. `bedTemperatures` maps supported supply voltages to verified limits.
 These capabilities apply equally to every manufacturer.
+
+### Firmware capabilities and command syntax
+
+A dialect's `name` is descriptive. Behavior comes from its fields: extrusion modes,
+register sharing, tool-change semantics, passive commands, `inchUnits`,
+`timedPlannerWait`, `interactivePlannerWait`, `reservedTools`, `chamberCooling`, and
+`strictHeaterSelectors`. Clone a preset to retain its capabilities when changing its
+name. A name alone does not select firmware behavior.
+
+For numeric commands with string arguments, set `dialect.payloadCommands` to the
+additional command codes. Their payload reaches command adapters without numeric
+parameter parsing. Standalone parsing accepts the same option as
+`parseLine(raw, lineNumber, { payloadCommands: ["M9000"] })`. This only enables syntax;
+an unhandled command still invalidates state. Adapters translate to modeled commands
+as before, and translated commands bypass adapters to prevent recursion.

@@ -1,4 +1,5 @@
 export { analyze, analyzeStream, GcodeAnalyzer } from "./analyzer.js";
+export type { ParseOptions } from "./parser.js";
 export { parseLine } from "./parser.js";
 export { Interpreter } from "./interpreter.js";
 export {

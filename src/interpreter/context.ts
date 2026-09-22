@@ -1,4 +1,4 @@
-import type { AnalysisEvent, Command, DiagnosticCategory } from "./types.js";
+import type { AnalysisEvent, Command, DiagnosticCategory } from "../types.js";
 
 /** Collect source-aware diagnostics and invalidate state when a command cannot be modeled. */
 export function createCommandContext(command: Command, invalidate: () => void) {

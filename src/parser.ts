@@ -1,22 +1,15 @@
 import type { Command, Diagnostic, ParsedLine } from "./types.js";
 
 const numberPattern = /^[+-]?(?:\d+(?:\.\d*)?|\.\d+)/;
-const freeText = new Set([
-	"M117",
-	"M118",
-	"M23",
-	"M28",
-	"M30",
-	"M32",
-	"M1002",
-	// Prusa model/version/feature checks accept quoted strings. Their effects remain unsupported.
-	"M862.3",
-	"M862.4",
-	"M862.6",
-]);
+import { payloadCommands } from "./parser/command-syntax.js";
+
+export interface ParseOptions {
+	/** Additional numeric commands with opaque arguments for firmware adapters. */
+	payloadCommands?: readonly string[];
+}
 
 /** Parse one physical line. Scientific notation is deliberately excluded from this grammar. */
-export function parseLine(raw: string, line = 1): ParsedLine {
+export function parseLine(raw: string, line = 1, options: ParseOptions = {}): ParsedLine {
 	const diagnostics: Diagnostic[] = [];
 	const fail = (message: string): ParsedLine => ({
 		command: null,
@@ -122,7 +115,7 @@ export function parseLine(raw: string, line = 1): ParsedLine {
 		return fail("Command number is out of range.");
 	}
 	let rest = cleaned.slice(head[0].length).trim();
-	if (freeText.has(code)) {
+	if (payloadCommands.has(code) || options.payloadCommands?.includes(code)) {
 		return {
 			command: { code, params: {}, payload: rest, line, raw },
 			diagnostics,
