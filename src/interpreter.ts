@@ -1,3 +1,4 @@
+import { createCommandContext, type CommandContext } from "./command-context.js";
 import { marlinDialect } from "./dialects.js";
 import { arcParameter, createArc, pathLength } from "./geometry.js";
 import type {
@@ -5,7 +6,6 @@ import type {
 	AnalyzeOptions,
 	AxisSpeeds,
 	Command,
-	DiagnosticCategory,
 	Dialect,
 	MotionPath,
 	Position,
@@ -43,6 +43,7 @@ export class Interpreter {
 		this.dialect = options.dialect ?? options.printer?.dialect ?? marlinDialect;
 		this.extrusionRegisters.set(0, options.initialExtrusion ?? null);
 	}
+
 	get finalPosition(): Position {
 		return { ...this.position };
 	}
@@ -77,59 +78,18 @@ export class Interpreter {
 	}
 
 	private execute(command: Command): AnalysisEvent[] {
-		const events: AnalysisEvent[] = [];
+		const context = createCommandContext(command, () => this.invalidate());
+		const { events, diagnostic, invalid, unsupported, has, value, validate } = context;
 		const { code, params: p, line } = command;
-		const diagnostic = (
-			id: string,
-			message: string,
-			category: DiagnosticCategory = "coverage",
-			severity: "warning" | "error" | "info" = "warning",
-		): void => {
-			events.push({
-				type: "diagnostic",
-				diagnostic: {
-					code: id,
-					message,
-					category,
-					severity,
-					line,
-					command: code,
-				},
-			});
-		};
-		const invalid = (message: string): AnalysisEvent[] => {
-			diagnostic("INVALID_COMMAND", message, "semantic", "error");
-			this.invalidate();
-			return events;
-		};
-		const unsupported = (message: string): AnalysisEvent[] => {
-			diagnostic("UNSUPPORTED_COMMAND", message);
-			this.invalidate();
-			return events;
-		};
-		const has = (key: string): boolean => Object.hasOwn(p, key);
-		const value = (key: string): number | undefined => p[key] ?? undefined;
-		const validate = (allowed: string, flags = ""): boolean => {
-			for (const key of Object.keys(p)) {
-				if (!allowed.includes(key)) {
-					diagnostic("UNSUPPORTED_PARAMETER", `${code} parameter ${key} is not modeled.`);
-					this.invalidate();
-					return false;
-				}
-				if (p[key] === null && !flags.includes(key)) {
-					diagnostic("MISSING_VALUE", `${key} requires a numeric value.`, "semantic", "error");
-					this.invalidate();
-					return false;
-				}
-			}
-			return true;
-		};
+
 		if (this.suspended) {
 			return events;
 		}
+
 		if (this.dialect.passiveCommands.includes(code)) {
 			return events;
 		}
+
 		if (code === "M400") {
 			if (!validate(this.dialect.name === "bambu" ? "SPU" : "")) {
 				return events;
@@ -147,6 +107,7 @@ export class Interpreter {
 			}
 			return events;
 		}
+
 		if (this.dialect.name === "klipper" && code === "G20") {
 			return invalid("Klipper does not support inch units.");
 		}
@@ -161,6 +122,8 @@ export class Interpreter {
 				"Execution depends on unmodeled control flow. Interpretation stops here; syntax checking continues.",
 			);
 		}
+
+		// Tool selection can invalidate coordinates and extrusion baselines.
 		if (/^T\d+$/.test(code)) {
 			if (!validate("")) {
 				return events;
@@ -192,6 +155,8 @@ export class Interpreter {
 			}
 			return events;
 		}
+
+		// Modal settings affect subsequent commands; stored coordinates remain in millimeters.
 		if (["G20", "G21", "G90", "G91", "M82", "M83", "G17"].includes(code)) {
 			if (!validate("")) {
 				return events;
@@ -210,6 +175,7 @@ export class Interpreter {
 			}
 			return events;
 		}
+
 		if (code === "G18" || code === "G19") {
 			if (!validate("")) {
 				return events;
@@ -217,6 +183,7 @@ export class Interpreter {
 			this.plane = code;
 			return events;
 		}
+
 		if (code === "G28") {
 			if (!validate("XYZ", "XYZ")) {
 				return events;
@@ -240,6 +207,8 @@ export class Interpreter {
 			);
 			return events;
 		}
+
+		// G92 rebases the logical origin without moving the machine.
 		if (code === "G92") {
 			if (!validate("XYZE")) {
 				return events;
@@ -272,6 +241,8 @@ export class Interpreter {
 			}
 			return events;
 		}
+
+		// Speed and flow overrides are independent of the stored feedrate and E register.
 		if (code === "M220" || code === "M221") {
 			if (!validate(code === "M220" ? "S" : "ST")) {
 				return events;
@@ -299,6 +270,7 @@ export class Interpreter {
 			}
 			return events;
 		}
+
 		if (code === "M200") {
 			if (!validate("DT")) {
 				return events;
@@ -331,6 +303,8 @@ export class Interpreter {
 			}
 			return events;
 		}
+
+		// Normalize temperature commands to physical heaters and Celsius.
 		if (code === "M149") {
 			if (!validate("CFK", "CFK")) {
 				return events;
@@ -342,6 +316,7 @@ export class Interpreter {
 			this.temperatureUnit = units[0] as "C" | "F" | "K";
 			return events;
 		}
+
 		if (["M104", "M109", "M140", "M190", "M141", "M191"].includes(code)) {
 			const hotend = code === "M104" || code === "M109";
 			const wait = ["M109", "M190", "M191"].includes(code);
@@ -396,6 +371,8 @@ export class Interpreter {
 			});
 			return events;
 		}
+
+		// Account for explicit waits; planner settings do not simulate acceleration.
 		if (code === "G4") {
 			if (!validate("PS")) {
 				return events;
@@ -410,6 +387,7 @@ export class Interpreter {
 			events.push({ type: "dwell", line, seconds });
 			return events;
 		}
+
 		if (["M201", "M203", "M204", "M205"].includes(code)) {
 			if (!validate(code === "M204" ? "PRST" : code === "M205" ? "BESXYZJ" : "XYZE")) {
 				return events;
@@ -425,6 +403,7 @@ export class Interpreter {
 			);
 			return events;
 		}
+
 		if (code === "M18" || code === "M84") {
 			if (!validate("XYZES", "XYZE")) {
 				return events;
@@ -434,6 +413,7 @@ export class Interpreter {
 			}
 			return events;
 		}
+
 		if (code === "M211" || code === "M302") {
 			diagnostic(
 				"SAFETY_OVERRIDE",
@@ -443,31 +423,44 @@ export class Interpreter {
 			);
 			return unsupported("Safety protection settings are not simulated.");
 		}
+
 		if (["M0", "M1", "M25", "M600", "M112", "M2", "M30"].includes(code)) {
 			this.suspended = true;
 			return unsupported(
 				"Stop, pause or filament-change execution requires runtime information. Interpretation stops here.",
 			);
 		}
+
 		if (!["G0", "G1", "G2", "G3"].includes(code)) {
 			return unsupported(`${code} has no registered interpretation.`);
 		}
+		return this.move(command, context);
+	}
+
+	/** Resolve one move only after modal commands have established the current state. */
+	private move(command: Command, context: CommandContext): AnalysisEvent[] {
+		const { code, line } = command;
+		const { events, diagnostic, invalid, unsupported, has, value, validate } = context;
 		const isArc = code === "G2" || code === "G3";
 		if (!validate(isArc ? "XYZEFIJR" : "XYZEF")) {
 			return events;
 		}
+
 		if (this.unit === null || this.absolute === null) {
 			return unsupported("Movement units or positioning mode are unknown.");
 		}
+
 		if (value("F") !== undefined) {
 			if (value("F")! <= 0) {
 				return invalid("Feedrate must be positive.");
 			}
 			this.feedrate = (value("F")! * this.unit) / 60;
 		}
+
 		if (!isArc && !"XYZE".split("").some(has)) {
 			return events;
 		}
+
 		if (isArc && this.plane !== "G17") {
 			return unsupported("Only XY arcs are modeled in this release.");
 		}
@@ -480,6 +473,8 @@ export class Interpreter {
 				end[axis] = base === null ? null : base + coordinate * this.unit;
 			}
 		}
+
+		// E registers store requested coordinates; flow scaling applies only to their delta.
 		let extrusion: number | null = 0;
 		if (has("E")) {
 			if (this.tool === null) {
@@ -520,6 +515,8 @@ export class Interpreter {
 				);
 			}
 		}
+
+		// Validate the complete path before publishing a move event.
 		let path: MotionPath | null = null;
 		if (known(start) && known(end)) {
 			if (isArc) {
@@ -595,6 +592,8 @@ export class Interpreter {
 				}
 			}
 		}
+
+		// Reject overflow and underflow before non-finite metrics reach a report.
 		const computed = [
 			...Object.values(end),
 			extrusion,
@@ -609,6 +608,7 @@ export class Interpreter {
 		) {
 			return invalid("Movement exceeds the supported numeric precision or range.");
 		}
+
 		if (this.tool === null) {
 			diagnostic("UNKNOWN_ACTIVE_TOOL", "Movement cannot be attributed to a known tool.");
 		}
@@ -627,6 +627,7 @@ export class Interpreter {
 		});
 		return events;
 	}
+
 	private register(): number {
 		return this.dialect.extrusionRegisters === "shared" ? 0 : (this.tool ?? -1);
 	}

@@ -1,4 +1,5 @@
 import { Collector } from "./collector.js";
+import { LineFramer } from "./line-framer.js";
 import { Interpreter } from "./interpreter.js";
 import { parseLine } from "./parser.js";
 import { validateOptions } from "./profiles.js";
@@ -10,6 +11,7 @@ export class GcodeAnalyzer {
 	private readonly interpreter: Interpreter;
 	private finished = false;
 	private readonly options: AnalyzeOptions;
+
 	constructor(options: AnalyzeOptions = {}) {
 		validateOptions(options);
 		// Isolate configuration from caller mutations without cloning callbacks or AbortSignal.
@@ -22,6 +24,7 @@ export class GcodeAnalyzer {
 		this.collector = new Collector(this.options);
 		this.interpreter = new Interpreter(this.options);
 	}
+
 	/** Null is reserved for an oversized line discarded by the streaming framer. */
 	addLine(raw: string | null): void {
 		if (this.finished) {
@@ -59,6 +62,7 @@ export class GcodeAnalyzer {
 			}
 		}
 	}
+
 	finish(): AnalysisReport {
 		if (this.finished) {
 			throw new Error("This analyzer has already finished.");
@@ -70,66 +74,7 @@ export class GcodeAnalyzer {
 	}
 }
 
-/** Bounded line framing, including CRLF pairs split between chunks. */
-class LineFramer {
-	private parts: string[] = [];
-	private length = 0;
-	private oversized = false;
-	private afterCR = false;
-	constructor(
-		private readonly emit: (line: string | null) => void,
-		private readonly max: number,
-	) {}
-	push(chunk: string): void {
-		let start = 0;
-		if (this.afterCR && chunk.length) {
-			if (chunk[0] === "\n") {
-				start = 1;
-			}
-			this.afterCR = false;
-		}
-		for (let i = start; i < chunk.length; i++) {
-			const char = chunk.charCodeAt(i);
-			if (char !== 10 && char !== 13) {
-				continue;
-			}
-			this.append(chunk.slice(start, i));
-			this.flush();
-			if (char === 13) {
-				if (chunk.charCodeAt(i + 1) === 10) {
-					i++;
-				} else if (i === chunk.length - 1) {
-					this.afterCR = true;
-				}
-			}
-			start = i + 1;
-		}
-		this.append(chunk.slice(start));
-	}
-	finish(): void {
-		if (this.length || this.oversized) {
-			this.flush();
-		}
-	}
-	private append(part: string): void {
-		if (!part || this.oversized) {
-			return;
-		}
-		this.length += part.length;
-		if (this.length > this.max) {
-			this.parts = [];
-			this.oversized = true;
-		} else {
-			this.parts.push(part);
-		}
-	}
-	private flush(): void {
-		this.emit(this.oversized ? null : this.parts.join(""));
-		this.parts = [];
-		this.length = 0;
-		this.oversized = false;
-	}
-}
+/** Analyze a complete G-code string without retaining commands or toolpaths. */
 export function analyze(text: string, options: AnalyzeOptions = {}): AnalysisReport {
 	const analyzer = new GcodeAnalyzer(options);
 	const framer = new LineFramer((line) => analyzer.addLine(line), options.maxLineLength ?? 65536);

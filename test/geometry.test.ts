@@ -33,6 +33,7 @@ describe("continuous geometry", () => {
 		expect(intersectsExclusion(line, square)).toBe(true);
 		expect(analyze("G1 X10 F600", { ...base, printer }).constraints).toBe("violated");
 	});
+
 	it("includes tangency and collinear overlap", () => {
 		expect(
 			intersectsExclusion(
@@ -47,6 +48,7 @@ describe("continuous geometry", () => {
 			),
 		).toBe(true);
 	});
+
 	it("respects Z-limited exclusions during the whole move", () => {
 		expect(
 			intersectsExclusion(
@@ -61,6 +63,7 @@ describe("continuous geometry", () => {
 			),
 		).toBe(true);
 	});
+
 	it("checks vertical paths inside a prism", () => {
 		expect(
 			intersectsExclusion(
@@ -73,6 +76,7 @@ describe("continuous geometry", () => {
 			),
 		).toBe(true);
 	});
+
 	it("supports concave polygons", () => {
 		const concave: Exclusion = {
 			...square,
@@ -96,6 +100,7 @@ describe("continuous geometry", () => {
 			),
 		).toBe(false);
 	});
+
 	it("distinguishes print exclusions from travel exclusions", () => {
 		const options = {
 			...base,
@@ -107,6 +112,7 @@ describe("continuous geometry", () => {
 		expect(analyze("G1 X10 F600", options).constraints).toBe("passed");
 		expect(analyze("G1 X10 E1 F600", options).constraints).toBe("violated");
 	});
+
 	it("finds circular extrema that are absent from endpoints", () => {
 		const arc = createArc({ x: 10, y: 0, z: 0 }, { x: -10, y: 0, z: 2 }, false, { i: -10 });
 		expect(pathBounds(arc).max.y).toBeCloseTo(10);
@@ -125,6 +131,7 @@ describe("continuous geometry", () => {
 		expect(report.constraints).toBe("violated");
 		expect(report.maxAxisSpeed.x).toBeCloseTo((10 * Math.PI) / report.nominalDuration);
 	});
+
 	it("detects narrow exclusions along the arc instead of testing the chord", () => {
 		const arc = createArc({ x: 10, y: 0, z: 0 }, { x: -10, y: 0, z: 0 }, false, { i: -10 });
 		const narrow = {
@@ -141,6 +148,7 @@ describe("continuous geometry", () => {
 			false,
 		);
 	});
+
 	it("distinguishes short and long signed-radius arcs", () => {
 		const start = { x: 1, y: 0, z: 0 };
 		const end = { x: 0, y: 1, z: 0 };
@@ -148,6 +156,7 @@ describe("continuous geometry", () => {
 		expect(createArc(start, end, false, { r: -1 }).sweep).toBeCloseTo((3 * Math.PI) / 2);
 		expect(createArc(start, end, true, { r: 1 }).sweep).toBeCloseTo(-Math.PI / 2);
 	});
+
 	it("handles clockwise full circles and helical clipping", () => {
 		const arc = createArc({ x: 10, y: 0, z: 0 }, { x: 10, y: 0, z: 10 }, true, {
 			i: -10,
@@ -169,12 +178,14 @@ describe("continuous geometry", () => {
 		expect(intersectsExclusion(arc, { ...zone, minZ: 7, maxZ: 8 })).toBe(true);
 		expect(intersectsExclusion(arc, { ...zone, minZ: 1, maxZ: 2 })).toBe(false);
 	});
+
 	it("rejects impossible or ambiguous arcs", () => {
 		expect(() => createArc(origin, origin, false, { r: 1 })).toThrow();
 		expect(() => createArc(origin, { x: 10, y: 0, z: 0 }, false, { r: 1 })).toThrow();
 		expect(() => createArc(origin, { x: 1, y: 0, z: 0 }, false, { i: 1, r: 1 })).toThrow();
 		expect(() => createArc(origin, { x: 1, y: 0, z: 0 }, false, {})).toThrow();
 	});
+
 	it("analytical bounds contain densely evaluated points over many arcs", () => {
 		for (let i = 1; i <= 100; i++) {
 			const angle = i * 0.061;

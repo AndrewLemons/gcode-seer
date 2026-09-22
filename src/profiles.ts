@@ -21,12 +21,14 @@ const finite = (value: number, name: string): void => {
 		throw new TypeError(`${name} must be finite and within ±1e12.`);
 	}
 };
+
 const nonnegative = (value: number, name: string): void => {
 	finite(value, name);
 	if (value < 0) {
 		throw new TypeError(`${name} cannot be negative.`);
 	}
 };
+
 const box = (value: Box, name: string): void => {
 	for (const axis of ["x", "y", "z"] as const) {
 		finite(value.min[axis], `${name}.min.${axis}`);
@@ -36,6 +38,7 @@ const box = (value: Box, name: string): void => {
 		}
 	}
 };
+
 function validatePolygon(polygon: readonly Point2[]): void {
 	if (polygon.length < 3 || polygon.length > 10000) {
 		throw new TypeError("Exclusions require 3 to 10000 vertices.");
@@ -78,6 +81,7 @@ function validatePolygon(polygon: readonly Point2[]): void {
 		throw new TypeError("Exclusion polygon has no area.");
 	}
 }
+
 export function validateOptions(options: AnalyzeOptions): void {
 	if (options.dialect) {
 		validateDialect(options.dialect);
@@ -106,6 +110,7 @@ export function validateOptions(options: AnalyzeOptions): void {
 		validatePrinterProfile(options.printer);
 	}
 }
+
 export function validatePrinterProfile(profile: PrinterProfile): void {
 	if (!profile.name || typeof profile.name !== "string") {
 		throw new TypeError("A printer profile requires a name.");

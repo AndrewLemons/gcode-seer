@@ -21,6 +21,7 @@ describe("profiles and constraints", () => {
 			"violated",
 		);
 	});
+
 	it("checks temperatures, speed, extrusion and flow limits", () => {
 		const printer: PrinterProfile = {
 			name: "limited",
@@ -54,6 +55,7 @@ describe("profiles and constraints", () => {
 			]),
 		);
 	});
+
 	it("checks per-tool geometry", () => {
 		const printer: PrinterProfile = {
 			name: "dual",
@@ -69,6 +71,7 @@ describe("profiles and constraints", () => {
 			analyze("G1 X10 E1 F600", { ...base, printer }).diagnostics.map((d) => d.code),
 		).toContain("TOOL_PRINT_BOUNDS");
 	});
+
 	it("reports missing temperature knowledge", () => {
 		const report = analyze("M83\nG1 E1 F60", {
 			...base,
@@ -79,6 +82,7 @@ describe("profiles and constraints", () => {
 		});
 		expect(report.constraints).toBe("unknown");
 	});
+
 	it.each([
 		{
 			name: "bad",
@@ -96,6 +100,7 @@ describe("profiles and constraints", () => {
 	] satisfies PrinterProfile[])("rejects invalid configuration", (profile) => {
 		expect(() => validatePrinterProfile(profile)).toThrow();
 	});
+
 	it("rejects bad exclusion polygons", () => {
 		for (const points of [
 			["1x2"],
@@ -107,6 +112,7 @@ describe("profiles and constraints", () => {
 			expect(() => bambuExclusion(points)).toThrow();
 		}
 	});
+
 	it.each([
 		{ maxDiagnostics: -1 },
 		{ maxLineLength: 0 },

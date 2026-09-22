@@ -7,10 +7,12 @@ export interface Box {
 	min: Vector3;
 	max: Vector3;
 }
+
 export interface Point2 {
 	x: number;
 	y: number;
 }
+
 export interface Exclusion {
 	id: string;
 	/** Simple polygon without a repeated closing vertex. Boundary contact is a violation. */
@@ -19,6 +21,7 @@ export interface Exclusion {
 	maxZ?: number;
 	appliesTo: "all" | "extrusion";
 }
+
 export interface ToolProfile {
 	id: number;
 	/** Physical heater identity; several material tools may share a heater. */
@@ -31,6 +34,7 @@ export interface ToolProfile {
 	travelBounds?: Box;
 	printBounds?: Box;
 }
+
 export interface Dialect {
 	name: string;
 	extrusionMode: "marlin" | "independent" | "relative-override";
@@ -39,6 +43,7 @@ export interface Dialect {
 	toolChange: "logical" | "unmodeled";
 	passiveCommands: readonly string[];
 }
+
 export interface PrinterProfile {
 	name: string;
 	dialect?: Dialect;
@@ -54,6 +59,7 @@ export interface PrinterProfile {
 	maxBedTemperature?: number;
 	maxChamberTemperature?: number;
 }
+
 export type Severity = "info" | "warning" | "error";
 export type DiagnosticCategory = "syntax" | "semantic" | "coverage" | "constraint";
 export interface Diagnostic {
@@ -64,6 +70,7 @@ export interface Diagnostic {
 	message: string;
 	command?: string;
 }
+
 export interface Command {
 	code: string;
 	/** Null denotes a bare flag, such as X in G28 X. */
@@ -72,15 +79,18 @@ export interface Command {
 	raw: string;
 	payload?: string;
 }
+
 export interface ParsedLine {
 	command: Command | null;
 	diagnostics: readonly Diagnostic[];
 }
+
 export interface LinearPath {
 	kind: "line";
 	start: Vector3;
 	end: Vector3;
 }
+
 export interface ArcPath {
 	kind: "arc";
 	start: Vector3;
@@ -91,6 +101,7 @@ export interface ArcPath {
 	/** Signed radians, negative for clockwise. XY arcs may interpolate Z. */
 	sweep: number;
 }
+
 export type MotionPath = LinearPath | ArcPath;
 export interface MoveEvent {
 	type: "move";
@@ -106,6 +117,7 @@ export interface MoveEvent {
 	axisSpeeds: AxisSpeeds | null;
 	duration: number | null;
 }
+
 export interface TemperatureEvent {
 	type: "temperature";
 	line: number;
@@ -113,6 +125,7 @@ export interface TemperatureEvent {
 	target: number;
 	wait: boolean;
 }
+
 export type AnalysisEvent =
 	| MoveEvent
 	| TemperatureEvent
@@ -124,10 +137,12 @@ export interface CommandAdapter {
 	/** Undefined defers to built-ins. Returned commands bypass adapters. [] asserts no relevant effect. */
 	translate(command: Command): readonly Command[] | undefined;
 }
+
 export interface AnalysisRule {
 	name: string;
 	onEvent(event: Exclude<AnalysisEvent, { type: "diagnostic" }>): readonly Diagnostic[];
 }
+
 export interface AnalyzeOptions {
 	printer?: PrinterProfile;
 	dialect?: Dialect;
@@ -142,10 +157,12 @@ export interface AnalyzeOptions {
 	onEvent?: (event: AnalysisEvent) => void;
 	signal?: AbortSignal;
 }
+
 export interface Range {
 	min: number;
 	max: number;
 }
+
 export interface HeaterSummary {
 	targets: Range;
 	/** Heater-off targets are omitted. */
@@ -154,6 +171,7 @@ export interface HeaterSummary {
 	commands: number;
 	waits: number;
 }
+
 export interface ToolSummary {
 	moves: number;
 	extruded: number;
@@ -162,6 +180,7 @@ export interface ToolSummary {
 	maxExtrusionSpeed: number;
 	maxVolumetricFlow: number | null;
 }
+
 export interface AnalysisReport {
 	validity: "valid" | "invalid" | "unknown";
 	/** Only assesses supplied constraints. Passed does not certify physical safety. */

@@ -6,9 +6,9 @@ It reports motion, extrusion, heater targets, printer constraints, and uncertain
 ## Structure
 
 - `src/index.ts`: public exports; `types.ts`: public contracts.
-- `src/analyzer.ts`: analysis lifecycle and streaming input.
+- `src/analyzer.ts`, `src/line-framer.ts`: analysis lifecycle and bounded streaming input.
 - `src/parser.ts`: syntax and transport checksums.
-- `src/interpreter.ts`: modal printer state and normalized events.
+- `src/interpreter.ts`, `src/command-context.ts`: modal state, command validation, and events.
 - `src/geometry.ts`: paths, bounds, and polygon intersections.
 - `src/collector.ts`: metrics, diagnostics, and constraints.
 - `src/profiles.ts`, `src/dialects.ts`: configuration and firmware semantics.

@@ -2,9 +2,9 @@
 
 The public analysis APIs compose five layers:
 
-1. `analyzer.ts` frames strings or streamed UTF-8 into physical lines, enforces input limits and manages lifecycle.
+1. `analyzer.ts` decodes streamed UTF-8 and manages lifecycle; `line-framer.ts` splits physical lines with bounded buffering.
 2. `parser.ts` parses commands, parameters and transport checksums without changing printer state.
-3. `interpreter.ts` tracks modal state, origins, tool selection, extrusion registers and targets, and produces normalized events.
+3. `interpreter.ts` tracks modal state, origins, tool selection, extrusion registers and targets, and produces normalized events. `command-context.ts` handles parameter validation and source-aware diagnostics for both modal commands and motion.
 4. `geometry.ts` calculates paths, extrema and exclusion intersections without knowing firmware commands.
 5. `collector.ts` accumulates metrics and checks printer constraints. Custom rules operate on the same events.
 

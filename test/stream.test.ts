@@ -1,3 +1,6 @@
+import { mkdtemp, rm } from "node:fs/promises";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
 import { Readable } from "node:stream";
 import { describe, expect, it } from "bun:test";
 import { analyze, analyzeStream, GcodeAnalyzer } from "../src/index.js";
@@ -25,19 +28,34 @@ describe("streaming and lifecycle", () => {
 			);
 		}
 	});
+
 	it("handles one-byte chunks and a Node Readable", async () => {
 		const chunks = Array.from(new TextEncoder().encode(text), (byte) => Uint8Array.of(byte));
 		expect(await analyzeStream(Readable.from(chunks), options)).toEqual(analyze(text, options));
 	});
+
+	it("streams a UTF-8 file through Bun.file", async () => {
+		const directory = await mkdtemp(join(tmpdir(), "gcode-seer-stream-"));
+		try {
+			const file = Bun.file(join(directory, "part.gcode"));
+			await Bun.write(file, text);
+			expect(await analyzeStream(file.stream(), options)).toEqual(analyze(text, options));
+		} finally {
+			await rm(directory, { recursive: true, force: true });
+		}
+	});
+
 	it("supports mixed text and complete UTF-8 chunks", async () => {
 		expect(
 			(await analyzeStream(["G1 ", new TextEncoder().encode("X10 F600\r"), "", "\n"], options))
 				.lines,
 		).toBe(1);
 	});
+
 	it("rejects invalid UTF-8 rather than inserting replacement characters", async () => {
 		await expect(analyzeStream([Uint8Array.of(0xff)])).rejects.toThrow();
 	});
+
 	it("throws on upstream I/O errors", async () => {
 		async function* source() {
 			yield "G1 X10";
@@ -45,12 +63,14 @@ describe("streaming and lifecycle", () => {
 		}
 		await expect(analyzeStream(source())).rejects.toThrow("read failed");
 	});
+
 	it("honors cancellation", async () => {
 		const controller = new AbortController();
 		controller.abort();
 		expect(() => analyze("G21", { signal: controller.signal })).toThrow();
 		await expect(analyzeStream(["G21"], { signal: controller.signal })).rejects.toThrow();
 	});
+
 	it("caps line storage and recovers framing after oversized lines", async () => {
 		const program = `;${"x".repeat(10000)}\nG21`;
 		const report = await analyzeStream(Array.from(program), {
@@ -62,6 +82,7 @@ describe("streaming and lifecycle", () => {
 		expect(report.validity).toBe("invalid");
 		expect(report).toEqual(analyze(program, { maxLineLength: 16 }));
 	});
+
 	it("closes incremental analyzers and isolates their state", () => {
 		const first = new GcodeAnalyzer(options);
 		const second = new GcodeAnalyzer(options);
@@ -72,9 +93,11 @@ describe("streaming and lifecycle", () => {
 		expect(() => first.finish()).toThrow();
 		expect(() => first.addLine("G21")).toThrow();
 	});
+
 	it("rejects embedded newlines in the line API", () => {
 		expect(() => new GcodeAnalyzer().addLine("G21\nG90")).toThrow();
 	});
+
 	it("uses a configuration snapshot", () => {
 		const config = {
 			initialPosition: { x: 0, y: 0, z: 0 },

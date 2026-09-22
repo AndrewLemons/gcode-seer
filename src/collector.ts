@@ -7,6 +7,7 @@ import type {
 	Diagnostic,
 	MoveEvent,
 	ToolSummary,
+	TemperatureEvent,
 	Vector3,
 } from "./types.js";
 
@@ -14,16 +15,19 @@ const merge = (existing: Box | null, addition: Box): Box => {
 	if (!existing) {
 		return { min: { ...addition.min }, max: { ...addition.max } };
 	}
+
 	expandBox(existing, addition.min);
 	expandBox(existing, addition.max);
 	return existing;
 };
+/** Accumulate events without retaining the toolpath or unbounded diagnostics. */
 export class Collector {
 	readonly report: AnalysisReport;
 	private invalid = false;
 	private unsupported = false;
 	private violated = false;
 	private readonly limits: boolean;
+
 	constructor(private readonly options: AnalyzeOptions) {
 		const p = options.printer;
 		this.limits = !!(
@@ -66,6 +70,7 @@ export class Collector {
 			],
 		};
 	}
+
 	diagnostic(diagnostic: Diagnostic): void {
 		const r = this.report;
 		r.diagnosticCounts[diagnostic.severity]++;
@@ -74,22 +79,26 @@ export class Collector {
 		} else {
 			r.droppedDiagnostics++;
 		}
+
 		if (diagnostic.category === "syntax" || diagnostic.category === "semantic") {
 			if (diagnostic.severity === "error") {
 				this.invalid = true;
 				r.complete = false;
 			}
 		}
+
 		if (diagnostic.category === "coverage" && diagnostic.severity !== "info") {
 			r.complete = false;
 			if (["UNSUPPORTED_COMMAND", "UNSUPPORTED_PARAMETER"].includes(diagnostic.code)) {
 				this.unsupported = true;
 			}
 		}
+
 		if (diagnostic.category === "constraint" && diagnostic.severity === "error") {
 			this.violated = true;
 		}
 	}
+
 	event(event: AnalysisEvent): void {
 		if (event.type === "diagnostic") {
 			this.diagnostic(event.diagnostic);
@@ -103,48 +112,7 @@ export class Collector {
 		} else if (event.type === "tool") {
 			r.toolChanges++;
 		} else {
-			let summary = r.temperatures[event.heater];
-			if (!summary) {
-				summary = r.temperatures[event.heater] = {
-					targets: { min: event.target, max: event.target },
-					activeTargets: null,
-					finalTarget: event.target,
-					commands: 0,
-					waits: 0,
-				};
-			}
-			summary.targets.min = Math.min(summary.targets.min, event.target);
-			summary.targets.max = Math.max(summary.targets.max, event.target);
-			if (event.target > 0) {
-				summary.activeTargets = summary.activeTargets
-					? {
-							min: Math.min(summary.activeTargets.min, event.target),
-							max: Math.max(summary.activeTargets.max, event.target),
-						}
-					: { min: event.target, max: event.target };
-			}
-			summary.finalTarget = event.target;
-			summary.commands++;
-			summary.waits += Number(event.wait);
-			const profile = this.options.printer;
-			const limits =
-				event.heater === "bed"
-					? [profile?.maxBedTemperature]
-					: event.heater === "chamber"
-						? [profile?.maxChamberTemperature]
-						: (profile?.tools ?? [])
-								.filter((t) => t.heater === event.heater)
-								.map((t) => t.maxTemperature);
-			for (const limit of limits) {
-				if (limit !== undefined && event.target > limit) {
-					this.violation(
-						"TEMPERATURE_LIMIT",
-						event.line,
-						`${event.heater} target ${event.target} °C exceeds ${limit} °C.`,
-					);
-					break;
-				}
-			}
+			this.temperature(event);
 		}
 		for (const rule of this.options.rules ?? []) {
 			for (const diagnostic of rule.onEvent(event)) {
@@ -152,6 +120,54 @@ export class Collector {
 			}
 		}
 	}
+
+	/** Shared heaters accumulate targets across every tool that addresses them. */
+	private temperature(event: TemperatureEvent): void {
+		const r = this.report;
+		let summary = r.temperatures[event.heater];
+		if (!summary) {
+			summary = r.temperatures[event.heater] = {
+				targets: { min: event.target, max: event.target },
+				activeTargets: null,
+				finalTarget: event.target,
+				commands: 0,
+				waits: 0,
+			};
+		}
+		summary.targets.min = Math.min(summary.targets.min, event.target);
+		summary.targets.max = Math.max(summary.targets.max, event.target);
+		if (event.target > 0) {
+			summary.activeTargets = summary.activeTargets
+				? {
+						min: Math.min(summary.activeTargets.min, event.target),
+						max: Math.max(summary.activeTargets.max, event.target),
+					}
+				: { min: event.target, max: event.target };
+		}
+		summary.finalTarget = event.target;
+		summary.commands++;
+		summary.waits += Number(event.wait);
+		const profile = this.options.printer;
+		const limits =
+			event.heater === "bed"
+				? [profile?.maxBedTemperature]
+				: event.heater === "chamber"
+					? [profile?.maxChamberTemperature]
+					: (profile?.tools ?? [])
+							.filter((t) => t.heater === event.heater)
+							.map((t) => t.maxTemperature);
+		for (const limit of limits) {
+			if (limit !== undefined && event.target > limit) {
+				this.violation(
+					"TEMPERATURE_LIMIT",
+					event.line,
+					`${event.heater} target ${event.target} °C exceeds ${limit} °C.`,
+				);
+				break;
+			}
+		}
+	}
+
 	private violation(code: string, line: number, message: string): void {
 		this.diagnostic({
 			code,
@@ -161,6 +177,7 @@ export class Collector {
 			severity: "error",
 		});
 	}
+
 	private move(move: MoveEvent): void {
 		const r = this.report;
 		const p = this.options.printer;
@@ -199,6 +216,7 @@ export class Collector {
 				}
 			}
 		}
+
 		if (bounds) {
 			r.bounds = merge(r.bounds, bounds);
 			if (extruding) {
@@ -241,6 +259,7 @@ export class Collector {
 				this.violation("EXCLUSION", move.line, `Movement intersects exclusion "${zone.id}".`);
 			}
 		}
+
 		if (move.axisSpeeds) {
 			for (const axis of ["x", "y", "z", "e"] as const) {
 				r.maxAxisSpeed[axis] = Math.max(r.maxAxisSpeed[axis], move.axisSpeeds[axis]);
@@ -254,6 +273,14 @@ export class Collector {
 				}
 			}
 		}
+		this.extrusion(move);
+	}
+
+	/** Track filament and flow only when the active tool is known. */
+	private extrusion(move: MoveEvent): void {
+		const r = this.report;
+		const p = this.options.printer;
+		const extruding = move.extrusion !== null && move.extrusion > 0;
 		if (move.tool < 0) {
 			return;
 		}
@@ -288,6 +315,7 @@ export class Collector {
 				`Tool ${move.tool} exceeds its extrusion speed limit.`,
 			);
 		}
+
 		if (profile?.filamentDiameter && extruding) {
 			const flow = speed * Math.PI * (profile.filamentDiameter / 2) ** 2;
 			tool.maxVolumetricFlow = Math.max(tool.maxVolumetricFlow ?? 0, flow);
@@ -299,6 +327,7 @@ export class Collector {
 				);
 			}
 		}
+
 		if (profile?.minExtrusionTemperature !== undefined && extruding) {
 			const target = r.temperatures[profile.heater]?.finalTarget;
 			if (target === undefined) {
@@ -318,6 +347,7 @@ export class Collector {
 			}
 		}
 	}
+
 	finish(): AnalysisReport {
 		const r = this.report;
 		if (r.commands === 0) {

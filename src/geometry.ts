@@ -16,6 +16,7 @@ export function arcParameter(path: ArcPath, angle: number): number | null {
 	const t = travel / Math.abs(path.sweep);
 	return t <= 1 + EPSILON ? Math.min(1, t) : null;
 }
+
 export function pointAt(path: MotionPath, t: number): Vector3 {
 	if (t === 0) {
 		return { ...path.start };
@@ -38,11 +39,13 @@ export function pointAt(path: MotionPath, t: number): Vector3 {
 		z,
 	};
 }
+
 export function pathLength(path: MotionPath): number {
 	return path.kind === "line"
 		? Math.hypot(path.end.x - path.start.x, path.end.y - path.start.y, path.end.z - path.start.z)
 		: Math.hypot(path.radius * path.sweep, path.end.z - path.start.z);
 }
+
 export function pathBounds(path: MotionPath): Box {
 	const box: Box = { min: { ...path.start }, max: { ...path.start } };
 	expandBox(box, path.end);
@@ -56,18 +59,21 @@ export function pathBounds(path: MotionPath): Box {
 	}
 	return box;
 }
+
 export function expandBox(box: Box, point: Vector3): void {
 	for (const axis of axes) {
 		box.min[axis] = Math.min(box.min[axis], point[axis]);
 		box.max[axis] = Math.max(box.max[axis], point[axis]);
 	}
 }
+
 export function containsBox(outer: Box, inner: Box): boolean {
 	return axes.every(
 		(axis) =>
 			inner.min[axis] >= outer.min[axis] - EPSILON && inner.max[axis] <= outer.max[axis] + EPSILON,
 	);
 }
+
 export function pointInPolygon(point: Point2, polygon: readonly Point2[]): boolean {
 	let inside = false;
 	for (let i = 0; i < polygon.length; i++) {
@@ -168,6 +174,8 @@ export function intersectsExclusion(path: MotionPath, zone: Exclusion): boolean 
 			pointInPolygon(point, zone.polygon)
 		);
 	};
+	// Containment can change only at a boundary crossing. Check crossings and
+	// each interval midpoint so even narrow exclusions between endpoints count.
 	times.sort((a, b) => a - b);
 	return times.some((t, i) => contained(t) || (i > 0 && contained((t + times[i - 1]!) / 2)));
 }

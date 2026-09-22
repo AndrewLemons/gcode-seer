@@ -52,6 +52,7 @@ export function parseLine(raw: string, line = 1): ParsedLine {
 			}
 			checksum ^= text.charCodeAt(i);
 		}
+
 		if (checksum !== Number(tail[1])) {
 			return fail("Checksum does not match the line.");
 		}
@@ -63,6 +64,7 @@ export function parseLine(raw: string, line = 1): ParsedLine {
 		if (char === ";" && !inComment) {
 			break;
 		}
+
 		if (char === "(") {
 			if (inComment) {
 				return fail("Nested parenthesized comments are not supported.");
@@ -123,6 +125,7 @@ export function parseLine(raw: string, line = 1): ParsedLine {
 		if (!letter || !/^[A-Z]$/.test(letter)) {
 			return fail(`Unexpected token: ${rest.slice(0, 24)}.`);
 		}
+
 		if (Object.hasOwn(params, letter)) {
 			return fail(`Duplicate ${letter} parameter.`);
 		}
