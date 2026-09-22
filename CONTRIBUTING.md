@@ -2,6 +2,8 @@
 
 Use Bun 1.4.2 or later and `bun install --frozen-lockfile`. Run `bun run check`, `bun run test:coverage` and `bun run format:check` before submitting changes.
 
+See [the extension guide](docs/extending.md) for the module boundaries and paths for adding printer makes, firmware behavior, commands and checks.
+
 For a new command, cite its firmware documentation or source, define which state it changes, and add tests that distinguish its behavior from a plausible incorrect interpretation. Cover interactions with existing units, origins and positioning modes. Keep unsupported parameters visible.
 
 New printer presets need traceable dimensions and limits. Separate printable geometry from service travel. Document firmware versions and any assumptions about homing, tools or offsets. Do not infer hardware safety limits from an unverified slicer setting.

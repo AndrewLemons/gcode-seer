@@ -5,15 +5,18 @@ It reports motion, extrusion, heater targets, printer constraints, and uncertain
 
 ## Structure
 
-- `src/index.ts`: public exports; `types.ts`: public contracts.
-- `src/analyzer.ts`, `src/line-framer.ts`: analysis lifecycle and bounded streaming input.
-- `src/parser.ts`: syntax and transport checksums.
-- `src/interpreter.ts`, `src/command-context.ts`: modal state, command validation, and events.
-- `src/geometry.ts`: paths, bounds, and polygon intersections.
-- `src/collector.ts`: metrics, diagnostics, and constraints.
-- `src/profiles.ts`, `src/dialects.ts`: configuration and firmware semantics.
+- `src/index.ts`: public exports; `src/contracts/`: domain contracts (re-exported by `types.ts`).
+- `src/analyzer.ts`, `src/line-framer.ts`: lifecycle and bounded streaming input.
+- `src/parser.ts`, `src/parser/`: syntax, transport checksums and opaque payload declarations.
+- `src/interpreter/`: machine state, command context and command-family handlers; `interpreter.ts` dispatches.
+- `src/dialects/`: declarative firmware capabilities. Never dispatch on dialect names.
+- `src/geometry/`: paths, arcs, bounds and continuous containment; no firmware dependencies.
+- `src/reporting/`: metric accumulation; `src/constraints/`: event-based checks; `collector.ts` orchestrates both.
+- `src/profiles/`: catalog, generic builder, validation, manufacturer data and format importers.
+- `src/printer-catalog.ts`: composition of bundled manufacturer definitions. No brand/model branches in builders or checks.
+- `src/configuration/`: option, dialect and shared numeric validation.
 - `test/`: Bun behavioral tests; `scripts/`: build, benchmark, package and Git checks.
-- `docs/`: API, architecture, supported commands, and research sources.
+- `docs/`: API, architecture, extension guide, supported commands and research sources.
 
 ## Tooling
 

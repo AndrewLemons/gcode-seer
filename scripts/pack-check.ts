@@ -32,7 +32,7 @@ try {
 	run(["add", "--ignore-scripts", tarball], directory);
 	await Bun.write(
 		join(directory, "smoke.ts"),
-		`import { analyze, createPrinterProfile, listPrinterProfiles } from "gcode-seer";
+		`import { analyze, createPrinterProfile, listPrinterProfiles, createPrinterCatalog, marlinDialect, parseLine } from "gcode-seer";
 const report = analyze("G1 X3 Y4 F600", { initialPosition: { x: 0, y: 0, z: 0 } });
 if (report.distance.total !== 5 || report.maxAxisSpeed.x !== 6) {
 	throw new Error("Package import failed.");
@@ -41,17 +41,30 @@ const profile = createPrinterProfile("prusa-mk4s", { multiMaterial: "mmu3" });
 if (profile.tools?.length !== 5 || listPrinterProfiles("Bambu Lab").length !== 14 || analyze("M104 S291", { printer: profile }).constraints !== "violated") {
 	throw new Error("Packaged printer catalog failed.");
 }
+const custom = createPrinterCatalog([{
+ id: "custom", name: "Custom", manufacturer: "New make", reviewedAt: "2026-09-22",
+ sources: [], notes: [], dialect: marlinDialect, toolCounts: [1], size: [10, 10, 10],
+}]);
+if (custom.createPrinterProfile("custom").printBounds?.max.x !== 10 || parseLine('M9000 message="test"', 1, {payloadCommands: ["M9000"]}).command?.payload !== 'message="test"') {
+ throw new Error("Packaged extension APIs failed.");
+}
 `,
 	);
 	run(["smoke.ts"], directory);
 	await Bun.write(
 		join(directory, "consumer.ts"),
-		`import { analyze, createPrinterProfile, listPrinterProfiles, type AnalysisReport, type PrinterProfile, type PrinterProfileOptions, type PrinterProfileInfo } from "gcode-seer";
+		`import { analyze, createPrinterProfile, listPrinterProfiles, type AnalysisReport, type PrinterProfile, type PrinterProfileOptions, type PrinterProfileInfo, createPrinterCatalog, marlinDialect, type PrinterDefinition, type ParseOptions, parseLine } from "gcode-seer";
 const options: PrinterProfileOptions = { toolCount: 5 };
 const printer: PrinterProfile = createPrinterProfile("prusa-xl", options);
 const catalog: PrinterProfileInfo[] = listPrinterProfiles();
 const report: AnalysisReport = analyze("G21", { printer });
-console.log(report.complete, catalog.length);
+const definition: PrinterDefinition = {
+ id: "custom", name: "Custom", manufacturer: "New make", reviewedAt: "2026-09-22",
+ sources: [], notes: [], dialect: {...marlinDialect, timedPlannerWait: true}, toolCounts: [1],
+};
+const custom: PrinterProfile = createPrinterCatalog([definition]).createPrinterProfile("custom");
+const syntax: ParseOptions = {payloadCommands: ["M9000"]};
+console.log(report.complete, catalog.length, custom.name, parseLine("M9000 text", 1, syntax));
 `,
 	);
 	run(

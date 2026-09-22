@@ -2,6 +2,12 @@
 
 ## Unreleased
 
+- Organize contracts, command handlers, firmware capabilities, geometry, reporting and constraints into separate modules.
+- Build every printer through declarative capabilities; add isolated custom catalogs with open manufacturer and upgrade IDs.
+- Make dialect names descriptive: custom dialects must declare capabilities or clone a preset. Add configurable opaque command syntax for adapters.
+- Keep the original public exports; deprecate the geometry-only X1 Carbon helper in favor of the common catalog.
+- Validate unselected custom hardware capabilities and isolate adapter/rule list membership during analysis.
+
 - Add a researched catalog of 52 Bambu Lab and Prusa FFF printer configurations, with provenance, installed-tool/MMU options, material-to-nozzle mappings and voltage-dependent X1 bed limits. Discover four resin models with explicit unsupported-format explanations.
 - Check circular and polygonal printable areas, physical heater limits and toolhead speed; preserve unknown material mappings and recognize non-printing park selections.
 - Distinguish legacy AVR, modern AVR and Buddy extrusion modes; interpret Buddy M191 chamber cooling targets.

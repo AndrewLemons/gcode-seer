@@ -128,3 +128,5 @@ Tests cover numerical behavior, full-path exclusion checks, modal transitions, s
 Further reading: [API](docs/api.md), [supported commands and limits](docs/support.md), [architecture](docs/architecture.md), [research sources](docs/research.md), [contributing](CONTRIBUTING.md).
 
 MIT licensed.
+
+See the [extension guide](docs/extending.md) to add printer makes, firmware capabilities, commands or event checks. Custom printer catalogs use the same declarative builder as bundled printers.
