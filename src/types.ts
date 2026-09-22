@@ -13,6 +13,25 @@ export interface Point2 {
 	y: number;
 }
 
+/** Circular printable XY area; Z limits may be supplied independently in printBounds. */
+export interface Circle {
+	center: Point2;
+	radius: number;
+}
+
+export interface HeaterProfile {
+	id: string;
+	maxTemperature?: number;
+}
+
+export interface ProfileProvenance {
+	id: string;
+	manufacturer: "Bambu Lab" | "Prusa";
+	reviewedAt: string;
+	sources: readonly string[];
+	notes: readonly string[];
+}
+
 export interface Exclusion {
 	id: string;
 	/** Simple polygon without a repeated closing vertex. Boundary contact is a violation. */
@@ -46,16 +65,24 @@ export interface Dialect {
 
 export interface PrinterProfile {
 	name: string;
+	provenance?: ProfileProvenance;
 	dialect?: Dialect;
 	travelBounds?: Box;
 	printBounds?: Box;
+	printCircle?: Circle;
 	exclusions?: readonly Exclusion[];
 	/** Machine position reached after homing. Homing trajectories are not simulated. */
 	homePosition?: Partial<Vector3>;
 	tools?: readonly ToolProfile[];
+	/** Physical hotends, independent of a job's material tool assignments. */
+	heaters?: readonly HeaterProfile[];
+	/** Report incomplete coverage until material tools have been assigned to physical hotends. */
+	requiresToolMapping?: boolean;
 	/** Explicit temperature T selectors may identify physical heaters rather than material tools. */
 	heaterTargets?: Readonly<Record<number, string>>;
 	maxSpeed?: Partial<AxisSpeeds>;
+	/** Maximum requested tool-tip speed, including diagonal motion; excludes pure E moves. */
+	maxToolheadSpeed?: number;
 	maxBedTemperature?: number;
 	maxChamberTemperature?: number;
 }

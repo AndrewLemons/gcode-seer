@@ -1,4 +1,4 @@
-import type { ArcPath, Box, Exclusion, MotionPath, Point2, Vector3 } from "./types.js";
+import type { ArcPath, Box, Circle, Exclusion, MotionPath, Point2, Vector3 } from "./types.js";
 
 export const EPSILON = 1e-7;
 const TAU = 2 * Math.PI;
@@ -72,6 +72,24 @@ export function containsBox(outer: Box, inner: Box): boolean {
 		(axis) =>
 			inner.min[axis] >= outer.min[axis] - EPSILON && inner.max[axis] <= outer.max[axis] + EPSILON,
 	);
+}
+
+/** Exact XY containment for straight lines and circular/helical arcs. Boundary contact fits. */
+export function containsPathInCircle(circle: Circle, path: MotionPath): boolean {
+	const fits = (point: Point2): boolean =>
+		Math.hypot(point.x - circle.center.x, point.y - circle.center.y) <= circle.radius + EPSILON;
+	if (!fits(path.start) || !fits(path.end)) {
+		return false;
+	}
+	if (path.kind === "arc") {
+		// The farthest point lies on the ray from the bed center through the arc center.
+		const angle = Math.atan2(path.center.y - circle.center.y, path.center.x - circle.center.x);
+		const t = arcParameter(path, angle);
+		if (t !== null && !fits(pointAt(path, t))) {
+			return false;
+		}
+	}
+	return true;
 }
 
 export function pointInPolygon(point: Point2, polygon: readonly Point2[]): boolean {

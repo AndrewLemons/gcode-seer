@@ -1,4 +1,10 @@
-import { containsBox, expandBox, intersectsExclusion, pathBounds } from "./geometry.js";
+import {
+	containsBox,
+	containsPathInCircle,
+	expandBox,
+	intersectsExclusion,
+	pathBounds,
+} from "./geometry.js";
 import type {
 	AnalysisEvent,
 	AnalysisReport,
@@ -34,6 +40,10 @@ export class Collector {
 			p &&
 			(p.travelBounds ||
 				p.printBounds ||
+				p.printCircle ||
+				p.maxToolheadSpeed !== undefined ||
+				p.heaters?.length ||
+				p.requiresToolMapping ||
 				p.exclusions?.length ||
 				Object.keys(p.maxSpeed ?? {}).length ||
 				p.maxBedTemperature !== undefined ||
@@ -67,6 +77,7 @@ export class Collector {
 				"Homing endpoints come from the profile; homing trajectories are excluded.",
 				"Speeds are requests; duration excludes acceleration, heater waits and firmware overhead.",
 				"Constraints cover the active tool tip, not the carriage, inactive nozzles or the printed part.",
+				...(p?.provenance?.notes ?? []),
 			],
 		};
 	}
@@ -153,9 +164,14 @@ export class Collector {
 				? [profile?.maxBedTemperature]
 				: event.heater === "chamber"
 					? [profile?.maxChamberTemperature]
-					: (profile?.tools ?? [])
-							.filter((t) => t.heater === event.heater)
-							.map((t) => t.maxTemperature);
+					: [
+							...(profile?.heaters ?? [])
+								.filter((h) => h.id === event.heater)
+								.map((h) => h.maxTemperature),
+							...(profile?.tools ?? [])
+								.filter((t) => t.heater === event.heater)
+								.map((t) => t.maxTemperature),
+						];
 		for (const limit of limits) {
 			if (limit !== undefined && event.target > limit) {
 				this.violation(
@@ -186,6 +202,48 @@ export class Collector {
 		r.nominalDuration += move.duration ?? 0;
 		const toolProfile = p?.tools?.find((t) => t.id === move.tool);
 		const extruding = move.extrusion !== null && move.extrusion > 0;
+		if (p?.requiresToolMapping && !toolProfile) {
+			this.diagnostic({
+				code: "UNKNOWN_TOOL_MAPPING",
+				line: move.line,
+				category: "coverage",
+				severity: "warning",
+				message:
+					"Supply this job's material-to-physical-extruder mapping to check tool-specific limits.",
+			});
+		}
+		if (
+			p?.maxToolheadSpeed !== undefined &&
+			move.distance !== null &&
+			move.distance > 0 &&
+			move.feedrate !== null &&
+			move.feedrate > p.maxToolheadSpeed + 1e-7
+		) {
+			this.violation(
+				"TOOLHEAD_SPEED_LIMIT",
+				move.line,
+				`Requested tool-tip speed exceeds ${p.maxToolheadSpeed} mm/s.`,
+			);
+		}
+		if (extruding && p?.printCircle) {
+			const circle = p.printCircle;
+			const outside = move.path
+				? !containsPathInCircle(circle, move.path)
+				: [move.start, move.end].some(
+						(point) =>
+							point.x !== null &&
+							point.y !== null &&
+							Math.hypot(point.x - circle.center.x, point.y - circle.center.y) >
+								circle.radius + 1e-7,
+					);
+			if (outside) {
+				this.violation(
+					"PRINT_CIRCLE",
+					move.line,
+					"Extruding movement leaves the circular printable area.",
+				);
+			}
+		}
 		if (move.distance !== null) {
 			r.distance.total += move.distance;
 			if (move.extrusion !== null) {

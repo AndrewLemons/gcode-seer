@@ -320,13 +320,15 @@ export class Interpreter {
 		if (["M104", "M109", "M140", "M190", "M141", "M191"].includes(code)) {
 			const hotend = code === "M104" || code === "M109";
 			const wait = ["M109", "M190", "M191"].includes(code);
-			if (!validate(`${wait ? "SR" : "S"}${hotend ? "T" : ""}`)) {
+			const cooling = code === "M191" && this.dialect.name === "prusa-buddy";
+			if (!validate(`${wait ? "SR" : "S"}${hotend ? "T" : ""}${cooling ? "C" : ""}`)) {
 				return events;
 			}
-			if (has("S") && has("R")) {
-				return invalid("A temperature command cannot specify both S and R.");
+			if (["S", "R", "C"].filter(has).length > 1) {
+				return invalid("A temperature command must specify only one target.");
 			}
-			const target = value("S") ?? (wait ? value("R") : undefined);
+			const target =
+				value("S") ?? (wait ? value("R") : undefined) ?? (cooling ? value("C") : undefined);
 			if (target === undefined) {
 				return unsupported(
 					"Temperature commands without explicit targets require firmware-specific interpretation.",
@@ -350,6 +352,13 @@ export class Interpreter {
 			}
 			const profile = this.options.printer?.tools?.find((t) => t.id === tool);
 			const mappedHeater = has("T") ? this.options.printer?.heaterTargets?.[tool!] : undefined;
+			if (hotend && this.options.printer?.requiresToolMapping && !profile && !mappedHeater) {
+				diagnostic(
+					"UNKNOWN_TOOL_MAPPING",
+					"Cannot attribute this temperature to a physical heater without the job's tool mapping.",
+				);
+				return events;
+			}
 			if (hotend && this.options.printer?.tools && !profile && !mappedHeater) {
 				diagnostic(
 					"UNKNOWN_TOOL",

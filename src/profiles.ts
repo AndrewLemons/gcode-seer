@@ -124,6 +124,33 @@ export function validatePrinterProfile(profile: PrinterProfile): void {
 	if (profile.printBounds) {
 		box(profile.printBounds, "printBounds");
 	}
+	if (profile.printCircle) {
+		finite(profile.printCircle.center.x, "printCircle.center.x");
+		finite(profile.printCircle.center.y, "printCircle.center.y");
+		nonnegative(profile.printCircle.radius, "printCircle.radius");
+		if (profile.printCircle.radius === 0) {
+			throw new TypeError("Printable circle radius must be positive.");
+		}
+	}
+	if (profile.maxToolheadSpeed !== undefined) {
+		nonnegative(profile.maxToolheadSpeed, "maxToolheadSpeed");
+	}
+	if (
+		profile.requiresToolMapping !== undefined &&
+		typeof profile.requiresToolMapping !== "boolean"
+	) {
+		throw new TypeError("requiresToolMapping must be a boolean.");
+	}
+	const heaterIds = new Set<string>();
+	for (const heater of profile.heaters ?? []) {
+		if (!heater.id || ["bed", "chamber"].includes(heater.id) || heaterIds.has(heater.id)) {
+			throw new TypeError("Hotend heater IDs must be nonempty, unique and not bed or chamber.");
+		}
+		heaterIds.add(heater.id);
+		if (heater.maxTemperature !== undefined) {
+			nonnegative(heater.maxTemperature, "heater.maxTemperature");
+		}
+	}
 	for (const [key, value] of Object.entries(profile.homePosition ?? {})) {
 		finite(value, `homePosition.${key}`);
 	}
@@ -157,7 +184,11 @@ export function validatePrinterProfile(profile: PrinterProfile): void {
 		}
 	}
 	for (const [id, heater] of Object.entries(profile.heaterTargets ?? {})) {
-		if (!/^\d+$/.test(id) || Number(id) > 255 || !profile.tools?.some((t) => t.heater === heater)) {
+		if (
+			!/^\d+$/.test(id) ||
+			Number(id) > 255 ||
+			(!heaterIds.has(heater) && !profile.tools?.some((t) => t.heater === heater))
+		) {
 			throw new TypeError("Heater selectors must map IDs 0 to 255 to configured tool heaters.");
 		}
 	}
@@ -170,6 +201,9 @@ export function validatePrinterProfile(profile: PrinterProfile): void {
 			throw new TypeError("Tool heaters must have nonempty names other than bed or chamber.");
 		}
 		tools.add(tool.id);
+		if (profile.heaters && !heaterIds.has(tool.heater)) {
+			throw new TypeError("Tool heater must reference a configured physical heater.");
+		}
 		if (tool.travelBounds) {
 			box(tool.travelBounds, "tool.travelBounds");
 		}
