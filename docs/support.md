@@ -38,6 +38,8 @@ An empty or comment-only program is invalid. Diagnostics use one-based physical 
 
 Not every firmware implements every listed command. Dialects describe the analysis semantics; they are not comprehensive firmware capability databases. Except for specifically checked differences, `valid` does not establish that a particular firmware build accepts a command.
 
+The Prusa Buddy dialect also accepts `M191 C` (set chamber target and wait for cooling). S/R/C are mutually exclusive. Catalog XL T5 and INDX T8, and Bambu T255, are non-printing selections with unmodeled effects. They invalidate state without being mistaken for missing print tools.
+
 The parser supports compact words, signs, decimal fractions, lowercase commands, semicolon comments, single-level parenthesized comments, N line numbers, XOR checksums, BOMs, and LF/CRLF/CR line endings. It retains text payloads for display, file-selection and Bambu M1002 commands. Named macro payloads are available to adapters.
 
 One command is expected per physical line. Modal command omission, multi-command CNC blocks, expressions, scientific notation and nested comments are outside the grammar. `G1 X1E3` means X=1 and E=3, not scientific notation. Numeric words have an absolute limit of 10¹². Binary G-code and 3MF containers require a separate decoder or extractor.
@@ -63,6 +65,10 @@ Unmodeled conditional/repeat/file-execution commands stop interpretation for the
 Bed leveling, firmware retraction, tool offsets, workspaces, mesh compensation, pressure advance, macros, independent-carriage mirror/copy motion, nonlinear kinematics and vendor calibration operations are not simulated. Unrecognized versions remain visible as unsupported commands.
 
 ## Geometry and physical limits
+
+Built-in Bambu Lab and Prusa profiles, configuration choices and limitations are listed in the [catalog guide](printers.md). `prusaDialect` models modern AVR independent E positioning, `prusaLegacyDialect` models legacy AVR's relative override, and `prusaBuddyDialect` models native Buddy/Marlin overrides. Compatibility switches such as M862.2/.3 remain unsupported because they can change these semantics and invoke other operations.
+
+Printable constraints support boxes, XY circles and simple XY polygons. Boundary contact with printable areas is allowed; boundary contact with an exclusion is a violation. Circular and polygonal limits apply only to positive extrusion and can be combined with box limits. Unknown positions remain unknown even when a printer's dimensions are known.
 
 Arcs use analytic extrema and line/circle intersections with polygon edges. Z limits are evaluated at boundary crossings and interval interiors. There is no fixed-step chord approximation. Geometry uses an absolute comparison tolerance of 10⁻⁷ mm. Arc endpoint radius mismatch is rejected above the larger of 0.001 mm and 10⁻⁵ times the radius; accepted arcs follow the starting radius and preserve the requested endpoint.
 

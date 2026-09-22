@@ -8,7 +8,7 @@ The core has no runtime dependencies and no filesystem access. Use it with strin
 
 Version 0.1 is a foundation for static analysis, with conservative handling of unsupported behavior. It supports common Cartesian printing commands and XY arcs. It does not emulate an entire printer firmware.
 
-Full Bambu Studio files often contain proprietary startup operations, conditional blocks and tool changes. These can make a report incomplete. The library identifies those gaps; an X1 printable-area profile does not imply full X1 firmware support. See the [support matrix](docs/support.md).
+The built-in catalog covers Bambu Lab and Prusa FFF printers, with explicit hardware configuration and research provenance. Full slicer files can contain startup operations, conditional blocks and tool changes that make a report incomplete. Printer constraints do not imply complete firmware emulation. See the [printer catalog](docs/printers.md) and [support matrix](docs/support.md).
 
 ## Install and use
 
@@ -53,6 +53,7 @@ console.log(report.temperatures.hotend?.targets); // { min: 210, max: 210 }
 - Separate validity, constraint and completeness results.
 - Travel and extruding-move bounds, including arc extrema.
 - Polygon exclusion intersections along entire paths, optionally limited by height.
+- Rectangular, circular and polygonal printable areas, including per-nozzle reach.
 - Maximum requested feedrate and component speeds for X, Y, Z and E.
 - Heater target ranges, active target ranges, final observed targets and wait counts.
 - Extrusion, retraction and net filament length per tool.
@@ -74,7 +75,22 @@ const report = await analyzeStream(Bun.file("part.gcode").stream(), {
 
 Memory use is bounded by the current line, retained diagnostics, configuration and at most 256 tool states. The analyzer does not retain the toolpath. A caller that collects events is responsible for that storage. Invalid UTF-8 and stream errors reject the promise.
 
-## Exclusions and Bambu printers
+## Built-in printers
+
+```ts
+import { analyze, createPrinterProfile, listPrinterProfiles } from "gcode-seer";
+
+const available = listPrinterProfiles("Prusa");
+const printer = createPrinterProfile("prusa-mk4s", { multiMaterial: "mmu3" });
+const report = analyze("M104 S291", { printer });
+// A temperature-limit violation: the reviewed Buddy target cap is 290 °C.
+```
+
+Profiles cover all 14 reviewed Bambu models and Prusa's legacy i3, MK, MINI, XL, CORE One, INDX, HT90 and AFS families. Select installed XL/INDX tools, MMU upgrades, Bambu material-to-nozzle mappings and X1 supply voltage explicitly. Resin printers are listed as unavailable because their layer/exposure archives are not extrusion G-code.
+
+See [configuration examples and IDs](docs/printers.md) and the [per-printer research audit](docs/printer-research.md), including source revisions, discrepancies and unverified legacy limits.
+
+## Exclusions
 
 Printable geometry and machine travel are separate constraints. Purging, wiping and parking may use coordinates outside the printable bed.
 

@@ -32,20 +32,26 @@ try {
 	run(["add", "--ignore-scripts", tarball], directory);
 	await Bun.write(
 		join(directory, "smoke.ts"),
-		`import { analyze } from "gcode-seer";
+		`import { analyze, createPrinterProfile, listPrinterProfiles } from "gcode-seer";
 const report = analyze("G1 X3 Y4 F600", { initialPosition: { x: 0, y: 0, z: 0 } });
 if (report.distance.total !== 5 || report.maxAxisSpeed.x !== 6) {
 	throw new Error("Package import failed.");
+}
+const profile = createPrinterProfile("prusa-mk4s", { multiMaterial: "mmu3" });
+if (profile.tools?.length !== 5 || listPrinterProfiles("Bambu Lab").length !== 14 || analyze("M104 S291", { printer: profile }).constraints !== "violated") {
+	throw new Error("Packaged printer catalog failed.");
 }
 `,
 	);
 	run(["smoke.ts"], directory);
 	await Bun.write(
 		join(directory, "consumer.ts"),
-		`import { analyze, type AnalysisReport, type PrinterProfile } from "gcode-seer";
-const printer: PrinterProfile = { name: "consumer" };
+		`import { analyze, createPrinterProfile, listPrinterProfiles, type AnalysisReport, type PrinterProfile, type PrinterProfileOptions, type PrinterProfileInfo } from "gcode-seer";
+const options: PrinterProfileOptions = { toolCount: 5 };
+const printer: PrinterProfile = createPrinterProfile("prusa-xl", options);
+const catalog: PrinterProfileInfo[] = listPrinterProfiles();
 const report: AnalysisReport = analyze("G21", { printer });
-console.log(report.complete);
+console.log(report.complete, catalog.length);
 `,
 	);
 	run(

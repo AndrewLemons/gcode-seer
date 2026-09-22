@@ -6,6 +6,15 @@ Reviewed 2026-09-22. This is a source audit, not validation on physical printers
 
 Geometry was resolved through the complete inheritance chain, not read from a single leaf preset. No upstream implementation or start/end scripts are copied into this package.
 
+The reproducible audit resolves **56 Bambu nozzle presets** across 14 models and **249 Prusa FFF printer presets** across 40 model IDs. Geometry-equivalent nozzle and process variants are grouped in `test/fixtures/printer-sources.json`; tests independently compare those upstream facts against the catalog, including physical heater selectors and per-extruder reach. Regenerate with pinned, clean checkouts:
+
+```sh
+bun scripts/audit-printer-sources.ts /path/to/BambuStudio /path/to/PrusaSlicer-settings-prusa-fff > test/fixtures/printer-sources.json
+bun run format
+```
+
+PrusaSlicer 3.0 is a separate preview profile format, as documented on the [official download page](https://help.prusa3d.com/slicer-profiles/3). This audit uses the versioned 2.9-compatible FFF bundle plus current manufacturer specifications; it does not imply importing either slicer format at runtime.
+
 | Source                                                                                                                                                         | Reviewed revision and relevant files                                                                                                                              |
 | -------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | [Bambu Studio](https://github.com/bambulab/BambuStudio/tree/f977235e6d736c4c0b650520ac5a5b72cbfe9244/resources/profiles/BBL/machine)                           | `f977235e6d736c4c0b650520ac5a5b72cbfe9244`; every instantiated machine/nozzle preset, `fdm_machine_common`, `fdm_bbl_3dp_001_common`, `fdm_bbl_3dp_002_common`    |
@@ -40,6 +49,8 @@ P1/X1 exclusions are X0–18, Y0–28 and apply to deposition, not all travel. N
 
 The X1 power variant must be explicit before enforcing a voltage-dependent bed maximum; an unspecified supply does not silently select a region. Slicer acceleration, jerk and feedrate defaults are planner configuration, not verified immutable hardware limits. They are not promoted to safety constraints.
 
+The [shared English X1/X1 Carbon manual](https://cdn1.bambulab.com/documentation/Quick%20Start%20Guide%20for%20X1%20Combo%26X1-Carbon%20Combo-v1.pdf), specification table, confirms the same 300 °C hotend and 110 °C at 220 V / 120 °C at 110 V bed limits for both original models.
+
 Bambu `Tn` denotes a material selection. `M104/M109 Tn` can denote a physical extruder. The [reference processor](https://github.com/bambulab/BambuStudio/blob/f977235e6d736c4c0b650520ac5a5b72cbfe9244/src/libslic3r/GCode/GCodeProcessor.cpp) resolves temperatures through `m_physical_extruder_map` and material assignments. Dual-nozzle presets need a caller-supplied job mapping before attributing deposition to a nozzle; guessing T0=left is incorrect. `T255`, `T1000`, `T1100`, `Tn H...`, M620/M621 and Vortek operations are not ordinary logical tool changes. M622/M623 runtime branches cannot be flattened into a sequential print path.
 
 ## Prusa inventory and constraints
@@ -67,11 +78,26 @@ Buddy maximum _targets_ must subtract its configured safety margin: MINI 295−1
 
 ### Firmware findings that affect interpretation
 
+INDX's [firmware feature configuration](https://github.com/prusa3d/Prusa-Firmware-Buddy/blob/1ce23f33ed3b94e26aa33a44557d6c4a4be11eb6/ProjectOptions.cmake) enables `HAS_TOOLCHANGER` for both COREONE_INDX and COREONEL_INDX. [Tool index conversion](https://github.com/prusa3d/Prusa-Firmware-Buddy/blob/1ce23f33ed3b94e26aa33a44557d6c4a4be11eb6/src/common/tool_index.cpp) retains separate physical tool indices. Therefore the catalog records per-tool targets while explicitly avoiding a claim that parked passive tips heat independently. XL uses non-printing park index 5; INDX reserves index 8. Explicit job mappings also affect Buddy temperature selectors.
+
+Current [CORE One+ Gen 2 INDX](https://www.prusa3d.com/en/product/prusa-core-one-gen-2-indx-8-tool/) and [CORE One L+ INDX](https://www.prusa3d.com/en/product/prusa-core-one-l-indx-8-tool/) specifications confirm the same reduced volumes and 300 °C nozzle cap as their family profiles. Both 4- and 8-tool configurations are represented. The L INDX published Y dimension is 275 mm, but reviewed development firmware defines `Y_BED_SIZE 270` and offset-dependent print limits. Its profile records the published dimensions and the front-left origin as an explicit assumption, not a measured calibration or verified travel envelope.
+
 - Current AVR 3.14.1 uses independent E mode: G90/G91 alter XYZ bits only. Legacy v3.2.3 uses global relative OR the E override. Buddy native mode clears overrides on G90/G91, matching this library's Marlin mode. These need separate named dialects, not a blanket "Prusa equals Marlin" assertion.
 - Buddy `M862.2/.3` can select compatibility mode and even initiate chamber heating/homing. They must not be silently added to a passive-command allowlist. Firmware checks, custom startup/calibration and tool operations remain visible when unsupported.
 - Buddy [M191 C](https://github.com/prusa3d/Prusa-Firmware-Buddy/blob/1ce23f33ed3b94e26aa33a44557d6c4a4be11eb6/src/marlin_stubs/feature/chamber/M141_M191.cpp) sets a chamber target and waits only for cooling. Recognizing it avoids losing a legitimate target; it does not estimate wait time.
 - Buddy T commands can contain parking/return parameters; XL T5 parks every tool. Unmodeled tool movement must invalidate position rather than pretend it is a zero-distance selection.
 - Prusa `.bgcode` is binary input requiring decoding before this text analyzer; Bambu `.3mf`/`.gcode.3mf` is an archive requiring extraction. Neither is plain G-code.
+
+### Professional preset archives
+
+The [official manual profile downloads](https://help.prusa3d.com/slicer-profiles) provide public archives for professional printers. Older help-page comments referring to owner-only HT90 downloads do not describe the current public archive. These were downloaded and inspected, including inheritance, bed origin, height, flavor and all concrete nozzle variants:
+
+| Archive                                                                                                                                  | Inspected file and SHA-256                                                                  | Finding                                                                                                                                                                                                                      |
+| ---------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| [Prusa Pro HT](https://storage.googleapis.com/prusa3d-content-prod-14e8-preset-repo-api-public/prusa-pro-ht/prusa-pro-ht-offline.zip)    | `PrusaProHT/1.1.17.ini`; `175eb8964aedaa159105f15eaa4f6fb52822a853d870f106f894f5b2f301080c` | Six concrete presets: HF 0.25/0.4/0.6/0.8 and HT 0.4/0.6. Klipper, origin-centered polygon radius 150.1 mm, maximum height 405 mm. Catalog uses published radius 150 and height 400, documenting the extra slicer allowance. |
+| [Prusa Pro AFS](https://storage.googleapis.com/prusa3d-content-prod-14e8-preset-repo-api-public/prusa-pro-afs/prusa-pro-afs-offline.zip) | `PrusaProAFS/1.0.8.ini`; `0c66100c20d8e3ef73d257a6658978bab2123f4a166b94e2b7a002751367a348` | One concrete iX 0.4 mm preset; inherited XY 0–260, Z175, Marlin 2 flavor. Confirms the product dimensions and native origin.                                                                                                 |
+
+MK1 XY uses the archived 200 mm square with clip cutouts conservatively rounded to X10–30 / 170–190, Y0–5 / 195–200. Its firmware travel Z0.23–201 does not establish printable Z. The original 3 mm preset has Y3–203, X0–200, and calibrated filament diameter 2.9 mm. Printable XY polygons allow these facts to be enforced independently of unverified Z and thermal limits.
 
 ## Non-FFF coverage boundary
 

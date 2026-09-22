@@ -132,6 +132,18 @@ export function validatePrinterProfile(profile: PrinterProfile): void {
 			throw new TypeError("Printable circle radius must be positive.");
 		}
 	}
+	if (profile.printArea) {
+		validatePolygon(profile.printArea);
+	}
+	if (
+		profile.parkTool !== undefined &&
+		(!Number.isInteger(profile.parkTool) ||
+			profile.parkTool < 0 ||
+			profile.parkTool > 255 ||
+			profile.tools?.some((t) => t.id === profile.parkTool))
+	) {
+		throw new TypeError("parkTool must be a non-printing integer selector from 0 to 255.");
+	}
 	if (profile.maxToolheadSpeed !== undefined) {
 		nonnegative(profile.maxToolheadSpeed, "maxToolheadSpeed");
 	}

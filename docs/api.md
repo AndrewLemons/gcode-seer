@@ -41,11 +41,17 @@ All bounds use machine coordinates in millimeters. `travelBounds` applies to eve
 
 Each exclusion is a simple polygon with an optional vertical interval. Polygons may be concave and must not self-intersect. Repeated closing vertices and zero-length edges are rejected. `bambuExclusion` converts the flat `bed_exclude_area` array from a resolved Bambu Studio configuration. It does not resolve profile inheritance or import printer limits.
 
-The included X1 profile contains the reviewed slicer geometry: 256 × 256 × 250 mm, plus the front-left exclusion. This is a slicer print-height limit, not a statement about the full physical Z travel. Supply an independently verified travel envelope, heater limits, tool definitions and homing positions for your machine and firmware. Avoid treating slicer maximum-speed settings as measured hardware limits.
+`createPrinterProfile(id, options?)` creates a researched Bambu Lab or Prusa profile. `listPrinterProfiles(manufacturer?)` returns metadata, supported configurations, source URLs and limitations. Unknown IDs and unsupported configurations throw `RangeError`; incompatible options and resin profile creation throw `TypeError`. Both functions return independent objects and perform no I/O. See [catalog IDs and examples](printers.md) and [research evidence](printer-research.md).
+
+`provenance` contains the model ID, manufacturer, review date, sources and notes; notes are also included in report assumptions. Unspecified limits are not checked. Profiles do not assume a homing endpoint or infer a service-travel envelope from printable dimensions.
+
+`printCircle` defines a center and radius in XY. `printArea` defines a simple printable XY polygon. Both apply to positive extrusion, permit boundary contact, and check entire lines and XY/helical arcs analytically. They can be combined with `printBounds` for independent Z limits. XY-only legacy profiles leave unverified Z limits absent. `maxToolheadSpeed` constrains the requested spatial feedrate in mm/s, including diagonal motion and excluding pure E moves; `maxSpeed` constrains individual axis components.
+
+`createBambuX1CarbonPrintProfile()` remains the original geometry-only helper: 256 × 256 × 250 mm plus the front-left exclusion, with no added thermal or tool configuration. Use `createPrinterProfile("bambu-x1-carbon", options)` for the full catalog profile.
 
 ## Multiple tools and heaters
 
-A tool identifies a material/extruder context. A heater identifies physical thermal hardware. For example, two material tools may share a nozzle:
+A tool identifies a material/extruder context. A heater identifies a thermal target register, usually physical thermal hardware. INDX has exchangeable passive tips with per-tool target registers and a shared induction coil. For example, two material tools may share a nozzle:
 
 ```ts
 const printer: PrinterProfile = {
@@ -72,7 +78,9 @@ const printer: PrinterProfile = {
 };
 ```
 
-Without that map, explicit T targets use tool IDs. Without T, the active tool determines the heater. Map the actual printer's selectors; the example is not an H2D preset.
+Without that map, explicit T targets use tool IDs. Without T, the active tool determines the heater. Map the actual printer's selectors; the example is not an H2D preset. In the Bambu dialect, a supplied `heaterTargets` map is authoritative for explicit selectors: a missing selector produces `UNKNOWN_HEATER` instead of falling back to a material ID.
+
+`heaters` declares hotend IDs and temperature limits independently of material assignments. When present, every tool and explicit heater selector must reference a declared heater. Physical and tool limits combine using the most restrictive maximum. `requiresToolMapping` reports incomplete coverage for moves or implicit temperature commands whose material lacks a mapping; those temperatures are not attributed to an invented heater. `parkTool` identifies a non-printing firmware selection such as XL T5 or INDX T8. Parking remains unsupported and invalidates state, without falsely reporting a nonexistent print tool.
 
 `extrusionRegisters: 'shared'` carries one E coordinate across tool selections. `'per-tool'` retains one register per tool. New registers start unknown. `toolChange: 'logical'` asserts that selection has no hidden motion or coordinate effects. Use it only when those effects are already expanded into explicit moves or absent. The defaults report tool-change uncertainty.
 
@@ -116,4 +124,4 @@ const rule: AnalysisRule = {
 
 Create separate instances of stateful rules for concurrent analyses. Event consumers should treat event data as read-only. Avoid storing every event when processing large files.
 
-Geometry helpers are exported for visualization or additional checks: `createArc`, `pathBounds`, `pathLength`, `pointAt`, `pointInPolygon`, `intersectsExclusion` and `containsBox`. Direct helper callers must supply finite, valid geometry; profile validation handles this for the main analysis APIs.
+Geometry helpers are exported for visualization or additional checks: `createArc`, `pathBounds`, `pathLength`, `pointAt`, `pointInPolygon`, `intersectsExclusion`, `containsBox`, `containsPathInCircle` and `containsPathInPolygon`. Direct helper callers must supply finite, valid geometry; profile validation handles this for the main analysis APIs.

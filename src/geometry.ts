@@ -120,6 +120,15 @@ export function pointInPolygon(point: Point2, polygon: readonly Point2[]): boole
 
 /** Exact line/circle edge intersections plus Z clipping; no chord sampling. */
 export function intersectsExclusion(path: MotionPath, zone: Exclusion): boolean {
+	return testPolygonPath(path, zone, false);
+}
+
+/** Exact XY containment, including concave beds and arcs; boundary contact fits. */
+export function containsPathInPolygon(polygon: readonly Point2[], path: MotionPath): boolean {
+	return testPolygonPath(path, { id: "", polygon, appliesTo: "extrusion" }, true);
+}
+
+function testPolygonPath(path: MotionPath, zone: Exclusion, containAll: boolean): boolean {
 	const times = [0, 1];
 	const add = (t: number): void => {
 		if (t >= -EPSILON && t <= 1 + EPSILON) {
@@ -195,7 +204,9 @@ export function intersectsExclusion(path: MotionPath, zone: Exclusion): boolean 
 	// Containment can change only at a boundary crossing. Check crossings and
 	// each interval midpoint so even narrow exclusions between endpoints count.
 	times.sort((a, b) => a - b);
-	return times.some((t, i) => contained(t) || (i > 0 && contained((t + times[i - 1]!) / 2)));
+	return containAll
+		? times.every((t, i) => contained(t) && (i === 0 || contained((t + times[i - 1]!) / 2)))
+		: times.some((t, i) => contained(t) || (i > 0 && contained((t + times[i - 1]!) / 2)));
 }
 
 export function createArc(

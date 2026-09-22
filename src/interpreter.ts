@@ -129,7 +129,11 @@ export class Interpreter {
 				return events;
 			}
 			const id = Number(code.slice(1));
-			if (id > 255) {
+			if (
+				id > 255 ||
+				id === this.options.printer?.parkTool ||
+				(this.dialect.name === "bambu" && id === 255)
+			) {
 				return unsupported("Reserved or nonphysical tool selection requires a dialect adapter.");
 			}
 			if (this.options.printer?.tools && !this.options.printer.tools.some((t) => t.id === id)) {
@@ -352,6 +356,21 @@ export class Interpreter {
 			}
 			const profile = this.options.printer?.tools?.find((t) => t.id === tool);
 			const mappedHeater = has("T") ? this.options.printer?.heaterTargets?.[tool!] : undefined;
+			if (
+				hotend &&
+				has("T") &&
+				this.dialect.name === "bambu" &&
+				this.options.printer?.heaterTargets &&
+				mappedHeater === undefined
+			) {
+				diagnostic(
+					"UNKNOWN_HEATER",
+					`Physical heater selector ${tool} is absent from the printer profile.`,
+					"constraint",
+					"error",
+				);
+				return events;
+			}
 			if (hotend && this.options.printer?.requiresToolMapping && !profile && !mappedHeater) {
 				diagnostic(
 					"UNKNOWN_TOOL_MAPPING",

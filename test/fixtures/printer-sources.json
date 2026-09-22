@@ -1,0 +1,1031 @@
+{
+	"revisions": {
+		"bambu": "f977235e6d736c4c0b650520ac5a5b72cbfe9244",
+		"prusa": "65c5c8f1e1c3836f306119c49d717759cbc368db"
+	},
+	"bambu": {
+		"Bambu Lab A1": {
+			"presets": [
+				"Bambu Lab A1 0.2 nozzle",
+				"Bambu Lab A1 0.4 nozzle",
+				"Bambu Lab A1 0.6 nozzle",
+				"Bambu Lab A1 0.8 nozzle"
+			],
+			"variants": [
+				{
+					"printable_area": ["0x0", "256x0", "256x256", "0x256"],
+					"printable_height": "256",
+					"bed_exclude_area": [],
+					"extruder_printable_area": [],
+					"extruder_printable_height": [],
+					"extruder_height_gap": "0",
+					"physical_extruder_map": ["0"]
+				}
+			]
+		},
+		"Bambu Lab A1 mini": {
+			"presets": [
+				"Bambu Lab A1 mini 0.2 nozzle",
+				"Bambu Lab A1 mini 0.4 nozzle",
+				"Bambu Lab A1 mini 0.6 nozzle",
+				"Bambu Lab A1 mini 0.8 nozzle"
+			],
+			"variants": [
+				{
+					"printable_area": ["0x0", "180x0", "180x180", "0x180"],
+					"printable_height": "180",
+					"bed_exclude_area": [],
+					"extruder_printable_area": [],
+					"extruder_printable_height": [],
+					"extruder_height_gap": "0",
+					"physical_extruder_map": ["0"]
+				}
+			]
+		},
+		"Bambu Lab A2L": {
+			"presets": [
+				"Bambu Lab A2L 0.2 nozzle",
+				"Bambu Lab A2L 0.4 nozzle",
+				"Bambu Lab A2L 0.6 nozzle",
+				"Bambu Lab A2L 0.8 nozzle"
+			],
+			"variants": [
+				{
+					"printable_area": ["0x0", "330x0", "330x320", "0x320"],
+					"printable_height": "325",
+					"bed_exclude_area": [],
+					"extruder_printable_area": [],
+					"extruder_printable_height": [],
+					"extruder_height_gap": "0",
+					"physical_extruder_map": ["0"]
+				}
+			]
+		},
+		"Bambu Lab H2C": {
+			"presets": [
+				"Bambu Lab H2C 0.2 nozzle",
+				"Bambu Lab H2C 0.4 nozzle",
+				"Bambu Lab H2C 0.6 nozzle",
+				"Bambu Lab H2C 0.8 nozzle"
+			],
+			"variants": [
+				{
+					"printable_area": ["0x0", "330x0", "330x320", "0x320"],
+					"printable_height": "325",
+					"bed_exclude_area": [],
+					"extruder_printable_area": ["0x0,325x0,325x320,0x320", "25x0,330x0,330x320,25x320"],
+					"extruder_printable_height": ["320", "325"],
+					"extruder_height_gap": "5",
+					"physical_extruder_map": ["1", "0"]
+				}
+			]
+		},
+		"Bambu Lab H2D": {
+			"presets": [
+				"Bambu Lab H2D 0.2 nozzle",
+				"Bambu Lab H2D 0.4 nozzle",
+				"Bambu Lab H2D 0.6 nozzle",
+				"Bambu Lab H2D 0.8 nozzle"
+			],
+			"variants": [
+				{
+					"printable_area": ["0x0", "350x0", "350x320", "0x320"],
+					"printable_height": "325",
+					"bed_exclude_area": [],
+					"extruder_printable_area": ["0x0,325x0,325x320,0x320", "25x0,350x0,350x320,25x320"],
+					"extruder_printable_height": ["320", "325"],
+					"extruder_height_gap": "5",
+					"physical_extruder_map": ["1", "0"]
+				}
+			]
+		},
+		"Bambu Lab H2D Pro": {
+			"presets": [
+				"Bambu Lab H2D Pro 0.2 nozzle",
+				"Bambu Lab H2D Pro 0.4 nozzle",
+				"Bambu Lab H2D Pro 0.6 nozzle",
+				"Bambu Lab H2D Pro 0.8 nozzle"
+			],
+			"variants": [
+				{
+					"printable_area": ["0x0", "350x0", "350x320", "0x320"],
+					"printable_height": "325",
+					"bed_exclude_area": [],
+					"extruder_printable_area": ["0x0,325x0,325x320,0x320", "25x0,350x0,350x320,25x320"],
+					"extruder_printable_height": ["320", "325"],
+					"extruder_height_gap": "5",
+					"physical_extruder_map": ["1", "0"]
+				}
+			]
+		},
+		"Bambu Lab H2S": {
+			"presets": [
+				"Bambu Lab H2S 0.2 nozzle",
+				"Bambu Lab H2S 0.4 nozzle",
+				"Bambu Lab H2S 0.6 nozzle",
+				"Bambu Lab H2S 0.8 nozzle"
+			],
+			"variants": [
+				{
+					"printable_area": ["0x0", "340x0", "340x320", "0x320"],
+					"printable_height": "340",
+					"bed_exclude_area": [],
+					"extruder_printable_area": [],
+					"extruder_printable_height": [],
+					"extruder_height_gap": "0",
+					"physical_extruder_map": ["0"]
+				}
+			]
+		},
+		"Bambu Lab P1P": {
+			"presets": [
+				"Bambu Lab P1P 0.2 nozzle",
+				"Bambu Lab P1P 0.4 nozzle",
+				"Bambu Lab P1P 0.6 nozzle",
+				"Bambu Lab P1P 0.8 nozzle"
+			],
+			"variants": [
+				{
+					"printable_area": ["0x0", "256x0", "256x256", "0x256"],
+					"printable_height": "250",
+					"bed_exclude_area": ["0x0", "18x0", "18x28", "0x28"],
+					"extruder_printable_area": [],
+					"extruder_printable_height": [],
+					"extruder_height_gap": "0",
+					"physical_extruder_map": ["0"]
+				}
+			]
+		},
+		"Bambu Lab P1S": {
+			"presets": [
+				"Bambu Lab P1S 0.2 nozzle",
+				"Bambu Lab P1S 0.4 nozzle",
+				"Bambu Lab P1S 0.6 nozzle",
+				"Bambu Lab P1S 0.8 nozzle"
+			],
+			"variants": [
+				{
+					"printable_area": ["0x0", "256x0", "256x256", "0x256"],
+					"printable_height": "250",
+					"bed_exclude_area": ["0x0", "18x0", "18x28", "0x28"],
+					"extruder_printable_area": [],
+					"extruder_printable_height": [],
+					"extruder_height_gap": "0",
+					"physical_extruder_map": ["0"]
+				}
+			]
+		},
+		"Bambu Lab P2S": {
+			"presets": [
+				"Bambu Lab P2S 0.2 nozzle",
+				"Bambu Lab P2S 0.4 nozzle",
+				"Bambu Lab P2S 0.6 nozzle",
+				"Bambu Lab P2S 0.8 nozzle"
+			],
+			"variants": [
+				{
+					"printable_area": ["0x0", "256x0", "256x256", "0x256"],
+					"printable_height": "256",
+					"bed_exclude_area": [],
+					"extruder_printable_area": [],
+					"extruder_printable_height": [],
+					"extruder_height_gap": "0",
+					"physical_extruder_map": ["0"]
+				}
+			]
+		},
+		"Bambu Lab X1": {
+			"presets": [
+				"Bambu Lab X1 0.2 nozzle",
+				"Bambu Lab X1 0.4 nozzle",
+				"Bambu Lab X1 0.6 nozzle",
+				"Bambu Lab X1 0.8 nozzle"
+			],
+			"variants": [
+				{
+					"printable_area": ["0x0", "256x0", "256x256", "0x256"],
+					"printable_height": "250",
+					"bed_exclude_area": ["0x0", "18x0", "18x28", "0x28"],
+					"extruder_printable_area": [],
+					"extruder_printable_height": [],
+					"extruder_height_gap": "0",
+					"physical_extruder_map": ["0"]
+				}
+			]
+		},
+		"Bambu Lab X1 Carbon": {
+			"presets": [
+				"Bambu Lab X1 Carbon 0.2 nozzle",
+				"Bambu Lab X1 Carbon 0.4 nozzle",
+				"Bambu Lab X1 Carbon 0.6 nozzle",
+				"Bambu Lab X1 Carbon 0.8 nozzle"
+			],
+			"variants": [
+				{
+					"printable_area": ["0x0", "256x0", "256x256", "0x256"],
+					"printable_height": "250",
+					"bed_exclude_area": ["0x0", "18x0", "18x28", "0x28"],
+					"extruder_printable_area": [],
+					"extruder_printable_height": [],
+					"extruder_height_gap": "0",
+					"physical_extruder_map": ["0"]
+				}
+			]
+		},
+		"Bambu Lab X1E": {
+			"presets": [
+				"Bambu Lab X1E 0.2 nozzle",
+				"Bambu Lab X1E 0.4 nozzle",
+				"Bambu Lab X1E 0.6 nozzle",
+				"Bambu Lab X1E 0.8 nozzle"
+			],
+			"variants": [
+				{
+					"printable_area": ["0x0", "256x0", "256x256", "0x256"],
+					"printable_height": "250",
+					"bed_exclude_area": ["0x0", "18x0", "18x28", "0x28"],
+					"extruder_printable_area": [],
+					"extruder_printable_height": [],
+					"extruder_height_gap": "0",
+					"physical_extruder_map": ["0"]
+				}
+			]
+		},
+		"Bambu Lab X2D": {
+			"presets": [
+				"Bambu Lab X2D 0.2 nozzle",
+				"Bambu Lab X2D 0.4 nozzle",
+				"Bambu Lab X2D 0.6 nozzle",
+				"Bambu Lab X2D 0.8 nozzle"
+			],
+			"variants": [
+				{
+					"printable_area": ["0x0", "256x0", "256x256", "0x256 "],
+					"printable_height": "261",
+					"bed_exclude_area": [],
+					"extruder_printable_area": ["0x0,256x0,256x256,0x256", "20.5x0,256x0,256x256,20.5x256"],
+					"extruder_printable_height": ["261", "256"],
+					"extruder_height_gap": "7",
+					"physical_extruder_map": ["1", "0"]
+				}
+			]
+		}
+	},
+	"prusa": {
+		"MINI": {
+			"presets": [
+				"Original Prusa MINI & MINI+",
+				"Original Prusa MINI & MINI+ 0.25 nozzle",
+				"Original Prusa MINI & MINI+ 0.6 nozzle",
+				"Original Prusa MINI & MINI+ 0.8 nozzle"
+			],
+			"variants": [
+				{
+					"bed_shape": "0x0,180x0,180x180,0x180",
+					"max_print_height": "180",
+					"gcode_flavor": "marlin2",
+					"single_extruder_multi_material": "0"
+				}
+			]
+		},
+		"MINIIS": {
+			"presets": [
+				"Original Prusa MINI & MINI+ Input Shaper",
+				"Original Prusa MINI & MINI+ Input Shaper 0.25 nozzle",
+				"Original Prusa MINI & MINI+ Input Shaper 0.6 nozzle",
+				"Original Prusa MINI & MINI+ Input Shaper 0.8 nozzle"
+			],
+			"variants": [
+				{
+					"bed_shape": "0x0,180x0,180x180,0x180",
+					"max_print_height": "180",
+					"gcode_flavor": "marlin2",
+					"single_extruder_multi_material": "0"
+				}
+			]
+		},
+		"MK3.5": {
+			"presets": [
+				"Original Prusa MK3.5 & MK3.5S 0.25 nozzle",
+				"Original Prusa MK3.5 & MK3.5S 0.3 nozzle",
+				"Original Prusa MK3.5 & MK3.5S 0.4 nozzle",
+				"Original Prusa MK3.5 & MK3.5S 0.5 nozzle",
+				"Original Prusa MK3.5 & MK3.5S 0.6 nozzle",
+				"Original Prusa MK3.5 & MK3.5S 0.8 nozzle"
+			],
+			"variants": [
+				{
+					"bed_shape": "0x0,250x0,250x210,0x210",
+					"max_print_height": "210",
+					"gcode_flavor": "marlin2",
+					"single_extruder_multi_material": "0"
+				}
+			]
+		},
+		"MK3.5MMU3": {
+			"presets": [
+				"Original Prusa MK3.5 & MK3.5S MMU3 0.25 nozzle",
+				"Original Prusa MK3.5 & MK3.5S MMU3 0.4 nozzle",
+				"Original Prusa MK3.5 & MK3.5S MMU3 0.6 nozzle"
+			],
+			"variants": [
+				{
+					"bed_shape": "0x0,250x0,250x210,0x210",
+					"max_print_height": "210",
+					"gcode_flavor": "marlin2",
+					"single_extruder_multi_material": "1"
+				}
+			]
+		},
+		"MK3.9": {
+			"presets": [
+				"Original Prusa MK3.9 0.25 nozzle",
+				"Original Prusa MK3.9 0.3 nozzle",
+				"Original Prusa MK3.9 0.4 nozzle",
+				"Original Prusa MK3.9 0.5 nozzle",
+				"Original Prusa MK3.9 0.6 nozzle",
+				"Original Prusa MK3.9 0.8 nozzle",
+				"Original Prusa MK3.9 HF0.4 nozzle",
+				"Original Prusa MK3.9 HF0.5 nozzle",
+				"Original Prusa MK3.9 HF0.6 nozzle",
+				"Original Prusa MK3.9 HF0.8 nozzle"
+			],
+			"variants": [
+				{
+					"bed_shape": "0x0,250x0,250x210,0x210",
+					"max_print_height": "220",
+					"gcode_flavor": "marlin2",
+					"single_extruder_multi_material": "0"
+				}
+			]
+		},
+		"MK3.9MMU3": {
+			"presets": [
+				"Original Prusa MK3.9 MMU3 0.4 nozzle",
+				"Original Prusa MK3.9 MMU3 0.6 nozzle",
+				"Original Prusa MK3.9 MMU3 HF0.4 nozzle"
+			],
+			"variants": [
+				{
+					"bed_shape": "0x0,250x0,250x210,0x210",
+					"max_print_height": "220",
+					"gcode_flavor": "marlin2",
+					"single_extruder_multi_material": "1"
+				}
+			]
+		},
+		"MK3.9S": {
+			"presets": [
+				"Original Prusa MK3.9S 0.25 nozzle",
+				"Original Prusa MK3.9S 0.3 nozzle",
+				"Original Prusa MK3.9S 0.4 nozzle",
+				"Original Prusa MK3.9S 0.5 nozzle",
+				"Original Prusa MK3.9S 0.6 nozzle",
+				"Original Prusa MK3.9S 0.8 nozzle",
+				"Original Prusa MK3.9S HF0.4 nozzle",
+				"Original Prusa MK3.9S HF0.5 nozzle",
+				"Original Prusa MK3.9S HF0.6 nozzle",
+				"Original Prusa MK3.9S HF0.8 nozzle"
+			],
+			"variants": [
+				{
+					"bed_shape": "0x0,250x0,250x210,0x210",
+					"max_print_height": "220",
+					"gcode_flavor": "marlin2",
+					"single_extruder_multi_material": "0"
+				}
+			]
+		},
+		"MK3.9SMMU3": {
+			"presets": [
+				"Original Prusa MK3.9S MMU3 0.4 nozzle",
+				"Original Prusa MK3.9S MMU3 0.6 nozzle",
+				"Original Prusa MK3.9S MMU3 HF0.4 nozzle"
+			],
+			"variants": [
+				{
+					"bed_shape": "0x0,250x0,250x210,0x210",
+					"max_print_height": "220",
+					"gcode_flavor": "marlin2",
+					"single_extruder_multi_material": "1"
+				}
+			]
+		},
+		"MK4": {
+			"presets": [
+				"Original Prusa MK4 0.25 nozzle",
+				"Original Prusa MK4 0.3 nozzle",
+				"Original Prusa MK4 0.4 nozzle",
+				"Original Prusa MK4 0.5 nozzle",
+				"Original Prusa MK4 0.6 nozzle",
+				"Original Prusa MK4 0.8 nozzle"
+			],
+			"variants": [
+				{
+					"bed_shape": "0x0,250x0,250x210,0x210",
+					"max_print_height": "220",
+					"gcode_flavor": "marlin2",
+					"single_extruder_multi_material": "0"
+				}
+			]
+		},
+		"MK4IS": {
+			"presets": [
+				"Original Prusa MK4 Input Shaper 0.25 nozzle",
+				"Original Prusa MK4 Input Shaper 0.3 nozzle",
+				"Original Prusa MK4 Input Shaper 0.4 nozzle",
+				"Original Prusa MK4 Input Shaper 0.5 nozzle",
+				"Original Prusa MK4 Input Shaper 0.6 nozzle",
+				"Original Prusa MK4 Input Shaper 0.8 nozzle",
+				"Original Prusa MK4 Input Shaper HF0.4 nozzle",
+				"Original Prusa MK4 Input Shaper HF0.5 nozzle",
+				"Original Prusa MK4 Input Shaper HF0.6 nozzle",
+				"Original Prusa MK4 Input Shaper HF0.8 nozzle"
+			],
+			"variants": [
+				{
+					"bed_shape": "0x0,250x0,250x210,0x210",
+					"max_print_height": "220",
+					"gcode_flavor": "marlin2",
+					"single_extruder_multi_material": "0"
+				}
+			]
+		},
+		"MK4ISMMU3": {
+			"presets": [
+				"Original Prusa MK4 MMU3 0.4 nozzle",
+				"Original Prusa MK4 MMU3 0.6 nozzle",
+				"Original Prusa MK4 MMU3 HF0.4 nozzle"
+			],
+			"variants": [
+				{
+					"bed_shape": "0x0,250x0,250x210,0x210",
+					"max_print_height": "220",
+					"gcode_flavor": "marlin2",
+					"single_extruder_multi_material": "1"
+				}
+			]
+		},
+		"MK4S": {
+			"presets": [
+				"Original Prusa MK4S 0.25 nozzle",
+				"Original Prusa MK4S 0.3 nozzle",
+				"Original Prusa MK4S 0.4 nozzle",
+				"Original Prusa MK4S 0.5 nozzle",
+				"Original Prusa MK4S 0.6 nozzle",
+				"Original Prusa MK4S 0.8 nozzle",
+				"Original Prusa MK4S HF0.4 nozzle",
+				"Original Prusa MK4S HF0.5 nozzle",
+				"Original Prusa MK4S HF0.6 nozzle",
+				"Original Prusa MK4S HF0.8 nozzle"
+			],
+			"variants": [
+				{
+					"bed_shape": "0x0,250x0,250x210,0x210",
+					"max_print_height": "220",
+					"gcode_flavor": "marlin2",
+					"single_extruder_multi_material": "0"
+				}
+			]
+		},
+		"MK4SMMU3": {
+			"presets": [
+				"Original Prusa MK4S MMU3 0.4 nozzle",
+				"Original Prusa MK4S MMU3 0.6 nozzle",
+				"Original Prusa MK4S MMU3 HF0.4 nozzle"
+			],
+			"variants": [
+				{
+					"bed_shape": "0x0,250x0,250x210,0x210",
+					"max_print_height": "220",
+					"gcode_flavor": "marlin2",
+					"single_extruder_multi_material": "1"
+				}
+			]
+		},
+		"XL2": {
+			"presets": [
+				"Original Prusa XL - 2T 0.25 nozzle",
+				"Original Prusa XL - 2T 0.3 nozzle",
+				"Original Prusa XL - 2T 0.4 nozzle",
+				"Original Prusa XL - 2T 0.5 nozzle",
+				"Original Prusa XL - 2T 0.6 nozzle",
+				"Original Prusa XL - 2T 0.8 nozzle"
+			],
+			"variants": [
+				{
+					"bed_shape": "0x0,360x0,360x360,0x360",
+					"max_print_height": "360",
+					"gcode_flavor": "marlin2",
+					"single_extruder_multi_material": "0"
+				}
+			]
+		},
+		"XL2IS": {
+			"presets": [
+				"Original Prusa XL - 2T Input Shaper 0.25 nozzle",
+				"Original Prusa XL - 2T Input Shaper 0.3 nozzle",
+				"Original Prusa XL - 2T Input Shaper 0.4 nozzle",
+				"Original Prusa XL - 2T Input Shaper 0.5 nozzle",
+				"Original Prusa XL - 2T Input Shaper 0.6 nozzle",
+				"Original Prusa XL - 2T Input Shaper 0.8 nozzle",
+				"Original Prusa XL - 2T Input Shaper HF0.4 nozzle",
+				"Original Prusa XL - 2T Input Shaper HF0.5 nozzle",
+				"Original Prusa XL - 2T Input Shaper HF0.6 nozzle",
+				"Original Prusa XL - 2T Input Shaper HF0.8 nozzle"
+			],
+			"variants": [
+				{
+					"bed_shape": "0x0,360x0,360x360,0x360",
+					"max_print_height": "360",
+					"gcode_flavor": "marlin2",
+					"single_extruder_multi_material": "0"
+				}
+			]
+		},
+		"XL5": {
+			"presets": [
+				"Original Prusa XL - 5T 0.25 nozzle",
+				"Original Prusa XL - 5T 0.3 nozzle",
+				"Original Prusa XL - 5T 0.4 nozzle",
+				"Original Prusa XL - 5T 0.5 nozzle",
+				"Original Prusa XL - 5T 0.6 nozzle",
+				"Original Prusa XL - 5T 0.8 nozzle"
+			],
+			"variants": [
+				{
+					"bed_shape": "0x0,360x0,360x360,0x360",
+					"max_print_height": "360",
+					"gcode_flavor": "marlin2",
+					"single_extruder_multi_material": "0"
+				}
+			]
+		},
+		"XL5IS": {
+			"presets": [
+				"Original Prusa XL - 5T Input Shaper 0.25 nozzle",
+				"Original Prusa XL - 5T Input Shaper 0.3 nozzle",
+				"Original Prusa XL - 5T Input Shaper 0.4 nozzle",
+				"Original Prusa XL - 5T Input Shaper 0.5 nozzle",
+				"Original Prusa XL - 5T Input Shaper 0.6 nozzle",
+				"Original Prusa XL - 5T Input Shaper 0.8 nozzle",
+				"Original Prusa XL - 5T Input Shaper HF0.4 nozzle",
+				"Original Prusa XL - 5T Input Shaper HF0.5 nozzle",
+				"Original Prusa XL - 5T Input Shaper HF0.6 nozzle",
+				"Original Prusa XL - 5T Input Shaper HF0.8 nozzle"
+			],
+			"variants": [
+				{
+					"bed_shape": "0x0,360x0,360x360,0x360",
+					"max_print_height": "360",
+					"gcode_flavor": "marlin2",
+					"single_extruder_multi_material": "0"
+				}
+			]
+		},
+		"XL": {
+			"presets": [
+				"Original Prusa XL 0.25 nozzle",
+				"Original Prusa XL 0.3 nozzle",
+				"Original Prusa XL 0.4 nozzle",
+				"Original Prusa XL 0.5 nozzle",
+				"Original Prusa XL 0.6 nozzle",
+				"Original Prusa XL 0.8 nozzle"
+			],
+			"variants": [
+				{
+					"bed_shape": "0x0,360x0,360x360,0x360",
+					"max_print_height": "360",
+					"gcode_flavor": "marlin2",
+					"single_extruder_multi_material": "0"
+				}
+			]
+		},
+		"XLIS": {
+			"presets": [
+				"Original Prusa XL Input Shaper 0.25 nozzle",
+				"Original Prusa XL Input Shaper 0.3 nozzle",
+				"Original Prusa XL Input Shaper 0.4 nozzle",
+				"Original Prusa XL Input Shaper 0.5 nozzle",
+				"Original Prusa XL Input Shaper 0.6 nozzle",
+				"Original Prusa XL Input Shaper 0.8 nozzle",
+				"Original Prusa XL Input Shaper HF0.4 nozzle",
+				"Original Prusa XL Input Shaper HF0.5 nozzle",
+				"Original Prusa XL Input Shaper HF0.6 nozzle",
+				"Original Prusa XL Input Shaper HF0.8 nozzle"
+			],
+			"variants": [
+				{
+					"bed_shape": "0x0,360x0,360x360,0x360",
+					"max_print_height": "360",
+					"gcode_flavor": "marlin2",
+					"single_extruder_multi_material": "0"
+				}
+			]
+		},
+		"MK2.5": {
+			"presets": [
+				"Original Prusa i3 MK2.5",
+				"Original Prusa i3 MK2.5 0.25 nozzle",
+				"Original Prusa i3 MK2.5 0.6 nozzle",
+				"Original Prusa i3 MK2.5 0.8 nozzle"
+			],
+			"variants": [
+				{
+					"bed_shape": "0x0,250x0,250x210,0x210",
+					"max_print_height": "200",
+					"gcode_flavor": "marlin",
+					"single_extruder_multi_material": "0"
+				}
+			]
+		},
+		"MK2.5MMU2": {
+			"presets": [
+				"Original Prusa i3 MK2.5 MMU2",
+				"Original Prusa i3 MK2.5 MMU2 0.25 nozzle",
+				"Original Prusa i3 MK2.5 MMU2 0.6 nozzle",
+				"Original Prusa i3 MK2.5 MMU2 Single",
+				"Original Prusa i3 MK2.5 MMU2 Single 0.25 nozzle",
+				"Original Prusa i3 MK2.5 MMU2 Single 0.6 nozzle",
+				"Original Prusa i3 MK2.5 MMU2 Single 0.8 nozzle"
+			],
+			"variants": [
+				{
+					"bed_shape": "0x0,250x0,250x210,0x210",
+					"max_print_height": "200",
+					"gcode_flavor": "marlin",
+					"single_extruder_multi_material": "1"
+				},
+				{
+					"bed_shape": "0x0,250x0,250x210,0x210",
+					"max_print_height": "200",
+					"gcode_flavor": "marlin",
+					"single_extruder_multi_material": "0"
+				}
+			]
+		},
+		"MK2.5S": {
+			"presets": [
+				"Original Prusa i3 MK2.5S",
+				"Original Prusa i3 MK2.5S 0.25 nozzle",
+				"Original Prusa i3 MK2.5S 0.6 nozzle",
+				"Original Prusa i3 MK2.5S 0.8 nozzle"
+			],
+			"variants": [
+				{
+					"bed_shape": "0x0,250x0,250x210,0x210",
+					"max_print_height": "200",
+					"gcode_flavor": "marlin",
+					"single_extruder_multi_material": "0"
+				}
+			]
+		},
+		"MK2.5SMMU2S": {
+			"presets": [
+				"Original Prusa i3 MK2.5S MMU2S",
+				"Original Prusa i3 MK2.5S MMU2S 0.25 nozzle",
+				"Original Prusa i3 MK2.5S MMU2S 0.6 nozzle",
+				"Original Prusa i3 MK2.5S MMU2S Single",
+				"Original Prusa i3 MK2.5S MMU2S Single 0.25 nozzle",
+				"Original Prusa i3 MK2.5S MMU2S Single 0.6 nozzle",
+				"Original Prusa i3 MK2.5S MMU2S Single 0.8 nozzle"
+			],
+			"variants": [
+				{
+					"bed_shape": "0x0,250x0,250x210,0x210",
+					"max_print_height": "200",
+					"gcode_flavor": "marlin",
+					"single_extruder_multi_material": "1"
+				},
+				{
+					"bed_shape": "0x0,250x0,250x210,0x210",
+					"max_print_height": "200",
+					"gcode_flavor": "marlin",
+					"single_extruder_multi_material": "0"
+				}
+			]
+		},
+		"MK2S": {
+			"presets": [
+				"Original Prusa i3 MK2S",
+				"Original Prusa i3 MK2S 0.25 nozzle",
+				"Original Prusa i3 MK2S 0.6 nozzle"
+			],
+			"variants": [
+				{
+					"bed_shape": "0x0,250x0,250x210,0x210",
+					"max_print_height": "200",
+					"gcode_flavor": "marlin",
+					"single_extruder_multi_material": "0"
+				}
+			]
+		},
+		"MK2SMM": {
+			"presets": [
+				"Original Prusa i3 MK2S MMU1",
+				"Original Prusa i3 MK2S MMU1 0.6 nozzle",
+				"Original Prusa i3 MK2S MMU1 Single",
+				"Original Prusa i3 MK2S MMU1 Single 0.6 nozzle"
+			],
+			"variants": [
+				{
+					"bed_shape": "0x0,250x0,250x210,0x210",
+					"max_print_height": "200",
+					"gcode_flavor": "marlin",
+					"single_extruder_multi_material": "1"
+				}
+			]
+		},
+		"MK3": {
+			"presets": [
+				"Original Prusa i3 MK3",
+				"Original Prusa i3 MK3 0.25 nozzle",
+				"Original Prusa i3 MK3 0.6 nozzle",
+				"Original Prusa i3 MK3 0.8 nozzle"
+			],
+			"variants": [
+				{
+					"bed_shape": "0x0,250x0,250x210,0x210",
+					"max_print_height": "210",
+					"gcode_flavor": "marlin",
+					"single_extruder_multi_material": "0"
+				}
+			]
+		},
+		"MK3MMU2": {
+			"presets": [
+				"Original Prusa i3 MK3 MMU2",
+				"Original Prusa i3 MK3 MMU2 0.25 nozzle",
+				"Original Prusa i3 MK3 MMU2 0.6 nozzle",
+				"Original Prusa i3 MK3 MMU2 Single",
+				"Original Prusa i3 MK3 MMU2 Single 0.25 nozzle",
+				"Original Prusa i3 MK3 MMU2 Single 0.6 nozzle",
+				"Original Prusa i3 MK3 MMU2 Single 0.8 nozzle"
+			],
+			"variants": [
+				{
+					"bed_shape": "0x0,250x0,250x210,0x210",
+					"max_print_height": "210",
+					"gcode_flavor": "marlin",
+					"single_extruder_multi_material": "1"
+				},
+				{
+					"bed_shape": "0x0,250x0,250x210,0x210",
+					"max_print_height": "210",
+					"gcode_flavor": "marlin",
+					"single_extruder_multi_material": "0"
+				}
+			]
+		},
+		"MK3S": {
+			"presets": [
+				"Original Prusa i3 MK3S & MK3S+",
+				"Original Prusa i3 MK3S & MK3S+ 0.25 nozzle",
+				"Original Prusa i3 MK3S & MK3S+ 0.6 nozzle",
+				"Original Prusa i3 MK3S & MK3S+ 0.8 nozzle"
+			],
+			"variants": [
+				{
+					"bed_shape": "0x0,250x0,250x210,0x210",
+					"max_print_height": "210",
+					"gcode_flavor": "marlin",
+					"single_extruder_multi_material": "0"
+				}
+			]
+		},
+		"MK3SMMU2S": {
+			"presets": [
+				"Original Prusa i3 MK3S & MK3S+ MMU2S",
+				"Original Prusa i3 MK3S & MK3S+ MMU2S 0.25 nozzle",
+				"Original Prusa i3 MK3S & MK3S+ MMU2S 0.6 nozzle",
+				"Original Prusa i3 MK3S & MK3S+ MMU2S Single",
+				"Original Prusa i3 MK3S & MK3S+ MMU2S Single 0.25 nozzle",
+				"Original Prusa i3 MK3S & MK3S+ MMU2S Single 0.6 nozzle",
+				"Original Prusa i3 MK3S & MK3S+ MMU2S Single 0.8 nozzle"
+			],
+			"variants": [
+				{
+					"bed_shape": "0x0,250x0,250x210,0x210",
+					"max_print_height": "210",
+					"gcode_flavor": "marlin",
+					"single_extruder_multi_material": "1"
+				},
+				{
+					"bed_shape": "0x0,250x0,250x210,0x210",
+					"max_print_height": "210",
+					"gcode_flavor": "marlin",
+					"single_extruder_multi_material": "0"
+				}
+			]
+		},
+		"MK3SMMU3": {
+			"presets": [
+				"Original Prusa i3 MK3S & MK3S+ MMU3",
+				"Original Prusa i3 MK3S & MK3S+ MMU3 0.25 nozzle",
+				"Original Prusa i3 MK3S & MK3S+ MMU3 0.6 nozzle",
+				"Original Prusa i3 MK3S & MK3S+ MMU3 Single",
+				"Original Prusa i3 MK3S & MK3S+ MMU3 Single 0.25 nozzle",
+				"Original Prusa i3 MK3S & MK3S+ MMU3 Single 0.6 nozzle",
+				"Original Prusa i3 MK3S & MK3S+ MMU3 Single 0.8 nozzle"
+			],
+			"variants": [
+				{
+					"bed_shape": "0x0,250x0,250x210,0x210",
+					"max_print_height": "210",
+					"gcode_flavor": "marlin",
+					"single_extruder_multi_material": "1"
+				},
+				{
+					"bed_shape": "0x0,250x0,250x210,0x210",
+					"max_print_height": "210",
+					"gcode_flavor": "marlin",
+					"single_extruder_multi_material": "0"
+				}
+			]
+		},
+		"COREONE": {
+			"presets": [
+				"Prusa CORE One 0.25 nozzle",
+				"Prusa CORE One 0.3 nozzle",
+				"Prusa CORE One 0.4 nozzle",
+				"Prusa CORE One 0.5 nozzle",
+				"Prusa CORE One 0.6 nozzle",
+				"Prusa CORE One 0.8 nozzle",
+				"Prusa CORE One HF0.4 nozzle",
+				"Prusa CORE One HF0.5 nozzle",
+				"Prusa CORE One HF0.6 nozzle",
+				"Prusa CORE One HF0.8 nozzle"
+			],
+			"variants": [
+				{
+					"bed_shape": "0x0,250x0,250x220,0x220",
+					"max_print_height": "270",
+					"gcode_flavor": "marlin2",
+					"single_extruder_multi_material": "0"
+				}
+			]
+		},
+		"COREONE_INDX4T": {
+			"presets": ["Prusa CORE One INDX 4T HF0.4 nozzle"],
+			"variants": [
+				{
+					"bed_shape": "0x0,248x0,248x205,0x205",
+					"max_print_height": "270",
+					"gcode_flavor": "marlin2",
+					"single_extruder_multi_material": "0"
+				}
+			]
+		},
+		"COREONE_INDX8T": {
+			"presets": ["Prusa CORE One INDX 8T HF0.4 nozzle"],
+			"variants": [
+				{
+					"bed_shape": "0x0,248x0,248x205,0x205",
+					"max_print_height": "270",
+					"gcode_flavor": "marlin2",
+					"single_extruder_multi_material": "0"
+				}
+			]
+		},
+		"COREONEL": {
+			"presets": [
+				"Prusa CORE One L 0.25 nozzle",
+				"Prusa CORE One L 0.3 nozzle",
+				"Prusa CORE One L 0.4 nozzle",
+				"Prusa CORE One L 0.5 nozzle",
+				"Prusa CORE One L 0.6 nozzle",
+				"Prusa CORE One L 0.8 nozzle",
+				"Prusa CORE One L HF0.4 nozzle",
+				"Prusa CORE One L HF0.5 nozzle",
+				"Prusa CORE One L HF0.6 nozzle",
+				"Prusa CORE One L HF0.8 nozzle"
+			],
+			"variants": [
+				{
+					"bed_shape": "0x0,300x0,300x300,0x300",
+					"max_print_height": "330",
+					"gcode_flavor": "marlin2",
+					"single_extruder_multi_material": "0"
+				}
+			]
+		},
+		"COREONELMMU3": {
+			"presets": [
+				"Prusa CORE One L MMU3 0.4 nozzle",
+				"Prusa CORE One L MMU3 0.6 nozzle",
+				"Prusa CORE One L MMU3 HF0.4 nozzle"
+			],
+			"variants": [
+				{
+					"bed_shape": "0x0,300x0,300x300,0x300",
+					"max_print_height": "330",
+					"gcode_flavor": "marlin2",
+					"single_extruder_multi_material": "1"
+				}
+			]
+		},
+		"COREONEMMU3": {
+			"presets": [
+				"Prusa CORE One MMU3 0.4 nozzle",
+				"Prusa CORE One MMU3 0.6 nozzle",
+				"Prusa CORE One MMU3 HF0.4 nozzle"
+			],
+			"variants": [
+				{
+					"bed_shape": "0x0,250x0,250x220,0x220",
+					"max_print_height": "270",
+					"gcode_flavor": "marlin2",
+					"single_extruder_multi_material": "1"
+				}
+			]
+		},
+		"COREONEOAK": {
+			"presets": [
+				"Prusa Signature Oak 0.25 nozzle",
+				"Prusa Signature Oak 0.3 nozzle",
+				"Prusa Signature Oak 0.4 nozzle",
+				"Prusa Signature Oak 0.5 nozzle",
+				"Prusa Signature Oak 0.6 nozzle",
+				"Prusa Signature Oak 0.8 nozzle",
+				"Prusa Signature Oak HF0.4 nozzle",
+				"Prusa Signature Oak HF0.5 nozzle",
+				"Prusa Signature Oak HF0.6 nozzle",
+				"Prusa Signature Oak HF0.8 nozzle"
+			],
+			"variants": [
+				{
+					"bed_shape": "0x0,250x0,250x220,0x220",
+					"max_print_height": "270",
+					"gcode_flavor": "marlin2",
+					"single_extruder_multi_material": "0"
+				}
+			]
+		},
+		"XLP1T": {
+			"presets": [
+				"Prusa XL+ 0.25 nozzle",
+				"Prusa XL+ 0.3 nozzle",
+				"Prusa XL+ 0.4 nozzle",
+				"Prusa XL+ 0.5 nozzle",
+				"Prusa XL+ 0.6 nozzle",
+				"Prusa XL+ 0.8 nozzle",
+				"Prusa XL+ HF0.4 nozzle",
+				"Prusa XL+ HF0.5 nozzle",
+				"Prusa XL+ HF0.6 nozzle",
+				"Prusa XL+ HF0.8 nozzle"
+			],
+			"variants": [
+				{
+					"bed_shape": "0x0,360x0,360x360,0x360",
+					"max_print_height": "360",
+					"gcode_flavor": "marlin2",
+					"single_extruder_multi_material": "0"
+				}
+			]
+		},
+		"XLP2T": {
+			"presets": [
+				"Prusa XL+ 2T 0.25 nozzle",
+				"Prusa XL+ 2T 0.3 nozzle",
+				"Prusa XL+ 2T 0.4 nozzle",
+				"Prusa XL+ 2T 0.5 nozzle",
+				"Prusa XL+ 2T 0.6 nozzle",
+				"Prusa XL+ 2T 0.8 nozzle",
+				"Prusa XL+ 2T HF0.4 nozzle",
+				"Prusa XL+ 2T HF0.5 nozzle",
+				"Prusa XL+ 2T HF0.6 nozzle",
+				"Prusa XL+ 2T HF0.8 nozzle"
+			],
+			"variants": [
+				{
+					"bed_shape": "0x0,360x0,360x360,0x360",
+					"max_print_height": "360",
+					"gcode_flavor": "marlin2",
+					"single_extruder_multi_material": "0"
+				}
+			]
+		},
+		"XLP5T": {
+			"presets": [
+				"Prusa XL+ 5T 0.25 nozzle",
+				"Prusa XL+ 5T 0.3 nozzle",
+				"Prusa XL+ 5T 0.4 nozzle",
+				"Prusa XL+ 5T 0.5 nozzle",
+				"Prusa XL+ 5T 0.6 nozzle",
+				"Prusa XL+ 5T 0.8 nozzle",
+				"Prusa XL+ 5T HF0.4 nozzle",
+				"Prusa XL+ 5T HF0.5 nozzle",
+				"Prusa XL+ 5T HF0.6 nozzle",
+				"Prusa XL+ 5T HF0.8 nozzle"
+			],
+			"variants": [
+				{
+					"bed_shape": "0x0,360x0,360x360,0x360",
+					"max_print_height": "360",
+					"gcode_flavor": "marlin2",
+					"single_extruder_multi_material": "0"
+				}
+			]
+		}
+	}
+}

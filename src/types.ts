@@ -32,6 +32,8 @@ export interface ProfileProvenance {
 	notes: readonly string[];
 }
 
+export type MultiMaterialUpgrade = "mmu1" | "mmu2" | "mmu2s" | "mmu3";
+
 export interface Exclusion {
 	id: string;
 	/** Simple polygon without a repeated closing vertex. Boundary contact is a violation. */
@@ -70,6 +72,8 @@ export interface PrinterProfile {
 	travelBounds?: Box;
 	printBounds?: Box;
 	printCircle?: Circle;
+	/** Simple printable XY polygon; independent of unknown or separately configured Z limits. */
+	printArea?: readonly Point2[];
 	exclusions?: readonly Exclusion[];
 	/** Machine position reached after homing. Homing trajectories are not simulated. */
 	homePosition?: Partial<Vector3>;
@@ -80,6 +84,8 @@ export interface PrinterProfile {
 	requiresToolMapping?: boolean;
 	/** Explicit temperature T selectors may identify physical heaters rather than material tools. */
 	heaterTargets?: Readonly<Record<number, string>>;
+	/** Firmware's non-printing park selection (e.g. XL T5); its trajectory remains unmodeled. */
+	parkTool?: number;
 	maxSpeed?: Partial<AxisSpeeds>;
 	/** Maximum requested tool-tip speed, including diagonal motion; excludes pure E moves. */
 	maxToolheadSpeed?: number;

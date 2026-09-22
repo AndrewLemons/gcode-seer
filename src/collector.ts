@@ -1,9 +1,11 @@
 import {
 	containsBox,
 	containsPathInCircle,
+	containsPathInPolygon,
 	expandBox,
 	intersectsExclusion,
 	pathBounds,
+	pointInPolygon,
 } from "./geometry.js";
 import type {
 	AnalysisEvent,
@@ -41,6 +43,7 @@ export class Collector {
 			(p.travelBounds ||
 				p.printBounds ||
 				p.printCircle ||
+				p.printArea ||
 				p.maxToolheadSpeed !== undefined ||
 				p.heaters?.length ||
 				p.requiresToolMapping ||
@@ -241,6 +244,24 @@ export class Collector {
 					"PRINT_CIRCLE",
 					move.line,
 					"Extruding movement leaves the circular printable area.",
+				);
+			}
+		}
+		if (extruding && p?.printArea) {
+			const area = p.printArea;
+			const outside = move.path
+				? !containsPathInPolygon(area, move.path)
+				: [move.start, move.end].some(
+						(point) =>
+							point.x !== null &&
+							point.y !== null &&
+							!pointInPolygon({ x: point.x, y: point.y }, area),
+					);
+			if (outside) {
+				this.violation(
+					"PRINT_AREA",
+					move.line,
+					"Extruding movement leaves the printable XY polygon.",
 				);
 			}
 		}

@@ -1,6 +1,8 @@
 export { analyze, analyzeStream, GcodeAnalyzer } from "./analyzer.js";
 export { parseLine } from "./parser.js";
 export { Interpreter } from "./interpreter.js";
+export { createPrinterProfile, listPrinterProfiles } from "./printer-catalog.js";
+export type { PrinterProfileInfo, PrinterProfileOptions } from "./printer-catalog.js";
 export {
 	marlinDialect,
 	klipperDialect,
@@ -23,5 +25,6 @@ export {
 	intersectsExclusion,
 	containsBox,
 	containsPathInCircle,
+	containsPathInPolygon,
 } from "./geometry.js";
 export type * from "./types.js";
