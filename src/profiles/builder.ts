@@ -1,4 +1,4 @@
-import type { PrinterProfile, ToolProfile } from "../types.js";
+import type { PrinterProfile, ToolProfile } from "../contracts/printer.js";
 import { bounds } from "./geometry.js";
 import { validatePrinterProfile } from "./validation.js";
 import type { PrinterDefinition, PrinterProfileInfo, PrinterProfileOptions } from "./types.js";

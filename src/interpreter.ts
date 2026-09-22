@@ -2,7 +2,11 @@ import { createCommandContext } from "./interpreter/context.js";
 import { MachineState } from "./interpreter/state.js";
 import { commandHandlers } from "./interpreter/commands/registry.js";
 import { toolsCommands } from "./interpreter/commands/tools.js";
-import type { AnalysisEvent, AnalyzeOptions, Command, Position, Dialect } from "./types.js";
+import type { AnalysisEvent } from "./contracts/events.js";
+import type { AnalyzeOptions } from "./contracts/analysis.js";
+import type { Command } from "./contracts/syntax.js";
+import type { Position } from "./contracts/geometry.js";
+import type { Dialect } from "./contracts/dialect.js";
 
 /** One analysis owns one machine state; dispatch is independent of printer identity. */
 export class Interpreter {

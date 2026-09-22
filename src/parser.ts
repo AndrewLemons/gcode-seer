@@ -1,4 +1,4 @@
-import type { Command, Diagnostic, ParsedLine } from "./types.js";
+import type { Command, Diagnostic, ParsedLine } from "./contracts/syntax.js";
 
 const numberPattern = /^[+-]?(?:\d+(?:\.\d*)?|\.\d+)/;
 import { payloadCommands } from "./parser/command-syntax.js";

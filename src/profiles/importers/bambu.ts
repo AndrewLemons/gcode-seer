@@ -1,4 +1,4 @@
-import type { Exclusion } from "../../types.js";
+import type { Exclusion } from "../../contracts/geometry.js";
 import { validatePolygon } from "../../configuration/validation.js";
 /** Convert Bambu Studio's flat "XxY" array. Supply a resolved profile, after inheritance. */
 export function bambuExclusion(

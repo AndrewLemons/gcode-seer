@@ -1,4 +1,4 @@
-import type { PrinterProfile } from "../types.js";
+import type { PrinterProfile } from "../contracts/printer.js";
 import { finite, nonnegative, box, validatePolygon } from "../configuration/validation.js";
 import { validateDialect } from "../configuration/dialect.js";
 export function validatePrinterProfile(profile: PrinterProfile): void {

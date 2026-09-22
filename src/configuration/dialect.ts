@@ -1,4 +1,4 @@
-import type { Dialect } from "../types.js";
+import type { Dialect } from "../contracts/dialect.js";
 export function validateDialect(dialect: Dialect): void {
 	for (const key of [
 		"inchUnits",

@@ -1,4 +1,6 @@
-import type { Box, Dialect, PrinterProfile, ProfileProvenance } from "../types.js";
+import type { Box } from "../contracts/geometry.js";
+import type { Dialect } from "../contracts/dialect.js";
+import type { PrinterProfile, ProfileProvenance } from "../contracts/printer.js";
 
 export type Size = readonly [x: number, y: number, z: number];
 

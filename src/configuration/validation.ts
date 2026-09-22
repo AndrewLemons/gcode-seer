@@ -1,4 +1,4 @@
-import type { Box, Point2 } from "../types.js";
+import type { Box, Point2 } from "../contracts/geometry.js";
 export const finite = (value: number, name: string): void => {
 	if (!Number.isFinite(value) || Math.abs(value) > 1e12) {
 		throw new TypeError(`${name} must be finite and within ±1e12.`);

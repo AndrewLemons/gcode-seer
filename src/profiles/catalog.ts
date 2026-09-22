@@ -1,3 +1,4 @@
+import { validateDefinition } from "./definition-validation.js";
 import { buildPrinterProfile, profileInfo } from "./builder.js";
 import type { PrinterDefinition, PrinterProfileOptions } from "./types.js";
 
@@ -9,21 +10,8 @@ export function createPrinterCatalog(definitions: readonly PrinterDefinition[]) 
 			throw new TypeError(`Duplicate or empty printer ID: ${definition.id}.`);
 		}
 		const snapshot = structuredClone(definition);
-		if (!snapshot.unsupported) {
-			if (
-				!snapshot.toolCounts.length ||
-				snapshot.toolCounts.some((n) => !Number.isInteger(n) || n < 1 || n > 255)
-			) {
-				throw new TypeError("Tool counts must be integers between 1 and 255.");
-			}
-			if (
-				Object.values(snapshot.upgrades ?? {}).some((n) => !Number.isInteger(n) || n < 1 || n > 255)
-			) {
-				throw new TypeError("Material slot counts must be integers between 1 and 255.");
-			}
-			if (snapshot.extruders && snapshot.extruders.length < Math.max(...snapshot.toolCounts)) {
-				throw new TypeError("Configure every supported physical extruder.");
-			}
+		validateDefinition(snapshot);
+		if (snapshot.unsupported === undefined) {
 			for (const toolCount of snapshot.toolCounts) {
 				buildPrinterProfile(snapshot, { toolCount });
 			}

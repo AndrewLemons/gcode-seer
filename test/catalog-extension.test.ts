@@ -97,3 +97,35 @@ test("custom dialects are validated when a catalog is created", () => {
 	d.dialect = { ...d.dialect, passiveCommands: ["lowercase"] };
 	expect(() => createPrinterCatalog([d])).toThrow("Invalid dialect configuration");
 });
+
+test("validates hardware capabilities before any job selects them", () => {
+	const bounds = { min: { x: 0, y: 0, z: 0 }, max: { x: -1, y: 1, z: 1 } };
+	const patches = [
+		{ manufacturer: "" },
+		{ materialMapping: "other" },
+		{ heaterSelection: "other" },
+		{ bedTemperatures: { 48: -1 } },
+		{ bedTemperatures: { 0: 90 } },
+		{ filamentDiameter: 0 },
+		{
+			extruders: [
+				{ heater: "first", selector: 0 },
+				{ heater: "second", selector: 0 },
+			],
+		},
+		{
+			extruders: [
+				{ heater: "first", selector: 0, printBounds: bounds },
+				{ heater: "second", selector: 1 },
+			],
+		},
+		{ multipleExtruderBounds: bounds },
+	];
+	for (const patch of patches) {
+		expect(() =>
+			createPrinterCatalog([
+				{ ...definition(), materialMapping: "explicit", ...patch } as PrinterDefinition,
+			]),
+		).toThrow();
+	}
+});

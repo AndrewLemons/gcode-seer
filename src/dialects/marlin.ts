@@ -1,4 +1,4 @@
-import type { Dialect } from "../types.js";
+import type { Dialect } from "../contracts/dialect.js";
 import { passiveCommands } from "./common.js";
 
 export const marlinDialect: Dialect = Object.freeze({

@@ -1,4 +1,4 @@
-import type { Dialect } from "../types.js";
+import type { Dialect } from "../contracts/dialect.js";
 import { passiveCommands } from "./common.js";
 /** Bambu proprietary control flow and tool operations remain unsupported unless adapted. */
 export const bambuDialect: Dialect = Object.freeze({

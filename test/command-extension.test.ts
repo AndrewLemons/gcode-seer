@@ -109,3 +109,31 @@ test("unknown tools stay unattributed instead of reusing the last active tool", 
 	expect(report.tools).toEqual({});
 	expect(report.constraints).toBe("violated");
 });
+
+test("running analyzers retain their adapter and rule lists", async () => {
+	const { GcodeAnalyzer } = await import("../src/index.js");
+	const adapters = [{ name: "custom", translate: () => [] }];
+	const rules = [
+		{
+			name: "audit",
+			onEvent: () => [
+				{
+					code: "AUDIT",
+					line: 1,
+					message: "Checked.",
+					category: "coverage" as const,
+					severity: "info" as const,
+				},
+			],
+		},
+	];
+	const analyzer = new GcodeAnalyzer({ ...options, adapters, rules });
+	adapters.length = 0;
+	analyzer.addLine("CUSTOM");
+	// A separate analyzer exercises rule list ownership without an adapter swallowing moves.
+	const checked = new GcodeAnalyzer({ ...options, rules });
+	rules.length = 0;
+	checked.addLine("G1 X1 F60");
+	expect(analyzer.finish().validity).toBe("valid");
+	expect(checked.finish().diagnostics.map((d) => d.code)).toContain("AUDIT");
+});

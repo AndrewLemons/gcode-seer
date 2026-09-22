@@ -3,7 +3,7 @@ import { LineFramer } from "./line-framer.js";
 import { Interpreter } from "./interpreter.js";
 import { parseLine } from "./parser.js";
 import { validateOptions } from "./configuration/options.js";
-import type { AnalysisReport, AnalyzeOptions } from "./types.js";
+import type { AnalysisReport, AnalyzeOptions } from "./contracts/analysis.js";
 
 /** Incremental analyzer accepting complete physical lines. finish() closes the instance. */
 export class GcodeAnalyzer {
@@ -17,6 +17,8 @@ export class GcodeAnalyzer {
 		// Isolate configuration from caller mutations without cloning callbacks or AbortSignal.
 		this.options = {
 			...options,
+			...(options.adapters ? { adapters: [...options.adapters] } : {}),
+			...(options.rules ? { rules: [...options.rules] } : {}),
 			...(options.printer ? { printer: structuredClone(options.printer) } : {}),
 			...(options.dialect ? { dialect: structuredClone(options.dialect) } : {}),
 			...(options.initialPosition ? { initialPosition: { ...options.initialPosition } } : {}),

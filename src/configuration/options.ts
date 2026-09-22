@@ -1,4 +1,4 @@
-import type { AnalyzeOptions } from "../types.js";
+import type { AnalyzeOptions } from "../contracts/analysis.js";
 import { finite } from "./validation.js";
 import { validateDialect } from "./dialect.js";
 import { validatePrinterProfile } from "../profiles/validation.js";

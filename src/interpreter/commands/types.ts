@@ -1,4 +1,5 @@
-import type { AnalysisEvent, Command } from "../../types.js";
+import type { AnalysisEvent } from "../../contracts/events.js";
+import type { Command } from "../../contracts/syntax.js";
 import type { CommandContext } from "../context.js";
 import type { MachineState } from "../state.js";
 /** Each handler owns validation and effects for a cohesive command family. */

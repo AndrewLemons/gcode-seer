@@ -1,5 +1,5 @@
 import { arcParameter, createArc, pathLength } from "../../geometry.js";
-import type { AxisSpeeds, MotionPath } from "../../types.js";
+import type { AxisSpeeds, MotionPath } from "../../contracts/geometry.js";
 import { axes, known } from "../state.js";
 import type { CommandHandler } from "./types.js";
 export const motionCommands: readonly CommandHandler[] = [

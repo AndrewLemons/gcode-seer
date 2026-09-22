@@ -1,4 +1,4 @@
-import type { Box, Point2 } from "../types.js";
+import type { Box, Point2 } from "../contracts/geometry.js";
 import type { Size } from "./types.js";
 
 export const bounds = (size: Size, min: Size = [0, 0, 0]): Box => ({

@@ -1,5 +1,7 @@
 import { marlinDialect } from "../dialects.js";
-import type { AnalyzeOptions, Dialect, Position, Vector3 } from "../types.js";
+import type { AnalyzeOptions } from "../contracts/analysis.js";
+import type { Dialect } from "../contracts/dialect.js";
+import type { Position, Vector3 } from "../contracts/geometry.js";
 export const axes = ["x", "y", "z"] as const;
 export const known = (position: Position): position is Vector3 =>
 	axes.every((axis) => position[axis] !== null);

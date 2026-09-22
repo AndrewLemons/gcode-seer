@@ -1,4 +1,4 @@
-import type { Dialect } from "../types.js";
+import type { Dialect } from "../contracts/dialect.js";
 import { marlinDialect } from "./marlin.js";
 
 /** AVR 3.14.1: G90/G91 change XYZ without changing the independent E mode. */
